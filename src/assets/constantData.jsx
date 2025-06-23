@@ -77,7 +77,7 @@ export const NavigationData = [
   },
   {
     text: "Vertrag hochladen",
-    url: "/",
+    url: "/score",
   },
   {
     text: "Über uns",

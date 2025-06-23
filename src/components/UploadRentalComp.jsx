@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import Button from "./Button";
 
 const UploadRentalComp = () => {
@@ -6,11 +7,21 @@ const UploadRentalComp = () => {
   const [fileName, setFileName] = useState("");
   const [uploading, setUploading] = useState(false);
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-
     setFile(selectedFile);
     setFileName(selectedFile.name);
+  };
+
+  const handleLabelClick = () => {
+    if (location.pathname !== "/score") {
+      navigate("/score");
+    } else {
+      document.getElementById("fileInput").click();
+    }
   };
 
   return (
@@ -23,6 +34,8 @@ const UploadRentalComp = () => {
           <p className="mt-2 mb-4 text-[18px] font-semibold text-[var(--secondary-color)]">
             PDF, DOCX, JPG – max. 5 MB
           </p>
+
+          {/* Hidden File Input */}
           <input
             type="file"
             accept=".pdf,.docx,.jpg,.jpeg"
@@ -30,20 +43,24 @@ const UploadRentalComp = () => {
             className="hidden"
             id="fileInput"
           />
+
           <div className="flex flex-col justify-center lg:flex-row w-full items-center gap-5">
-            <label
-              htmlFor="fileInput"
+            {/* Conditional Label/Button */}
+            <div
+              onClick={handleLabelClick}
               className="cursor-pointer bg-[var(--para-color)] text-white h-[60px] w-[100%] sm:w-[80%] lg:w-[40%] flex justify-center items-center rounded-full hover:bg-[#20203d]
-                             text-[12px] sm:text-[14px] md:text-[16px] lg:text-[18px] xl:text-[20px]"
+                text-[12px] sm:text-[14px] md:text-[16px] lg:text-[18px] xl:text-[20px]"
             >
               Laden Sie Ihren Vertrag hoch
-            </label>
+            </div>
+
+            {/* Submit Button Appears After File Selected */}
             {fileName && (
               <Button
                 type="submit"
                 className="h-[50px] w-[80%] lg:w-[40%] bg-green-600 text-white py-2 rounded hover:bg-green-700 disabled:opacity-50"
                 text="Analyse starten"
-              ></Button>
+              />
             )}
           </div>
         </div>

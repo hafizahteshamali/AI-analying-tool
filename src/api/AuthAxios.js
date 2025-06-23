@@ -1,8 +1,8 @@
-import apiClient from "./Request";
+import Authapi from "./AuthRequest";
 
 const getRequest = async (path)=>{
     try {
-        const response = await apiClient.get(path)
+        const response = await Authapi.get(path)
         return response; 
     } catch (error) {
         return error;
@@ -11,7 +11,7 @@ const getRequest = async (path)=>{
 
 const postRequest = async (path, data)=>{
     try {
-        const response = await apiClient.post(path, data)
+        const response = await Authapi.post(path, data)
         return response; 
     } catch (error) {
         return error;
@@ -20,7 +20,7 @@ const postRequest = async (path, data)=>{
 
 const deleteRequest = async (path)=>{
     try {
-        const response = await apiClient.delete(path)
+        const response = await Authapi.delete(path)
         return response; 
     } catch (error) {
         return error;
@@ -29,7 +29,7 @@ const deleteRequest = async (path)=>{
 
 const putRequest = async (path)=>{
     try {
-        const response = await apiClient.put(path)
+        const response = await Authapi.put(path)
         return response; 
     } catch (error) {
         return error;

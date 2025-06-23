@@ -10,7 +10,8 @@ const Layout = () => {
     location.pathname === "/how-it-works" ||
     location.pathname === "/about-us" ||
     location.pathname === "/faqs" ||
-    location.pathname === "/admin/subscription";
+    location.pathname === "/admin/subscription" ||
+    location.pathname === "/score";
 
   return (
     <>

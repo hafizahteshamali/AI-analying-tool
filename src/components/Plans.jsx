@@ -13,7 +13,7 @@ const Plans = ({ data }) => {
 
   return (
     <div
-      className={`${cardHeight} w-full sm:w-[70%] md:w-[40%] lg:w-[31%] md:mx-0 ${borderColor} ${cardBg} relative rounded-2xl flex flex-wrap justify-center items-center my-4`}
+      className={`${cardHeight} w-full sm:w-[70%] md:w-[48%] lg:w-[31%] md:mx-0 ${borderColor} ${cardBg} relative rounded-2xl flex flex-wrap justify-center items-center my-4`}
     >
       <div className={`w-[95%] flex flex-col justify-center items-center ${textColor}`}>
         <h1 className="text-2xl font-[500]">{pkgName}</h1>

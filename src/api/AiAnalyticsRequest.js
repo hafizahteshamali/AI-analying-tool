@@ -1,15 +1,15 @@
 import axios from "axios";
 import { toast } from "react-toastify"; // Optional if you want to show toast here directly
 
-const apiClient = axios.create({
-  baseURL: "http://localhost:8050",
+const AiAnalyticsApi = axios.create({
+  baseURL: "http://127.0.0.1:8000",
   timeout: 5000,
   headers: {
-    "Content-Type": "application/json",
+    "Content-Type": "multipart/form-data",
   },
 });
 
-apiClient.interceptors.response.use(
+AiAnalyticsApi.interceptors.response.use(
   (response) => response,
   (error) => {
     // Optional toast directly here
@@ -21,4 +21,4 @@ apiClient.interceptors.response.use(
   }
 );
 
-export default apiClient;
+export default AiAnalyticsApi;
