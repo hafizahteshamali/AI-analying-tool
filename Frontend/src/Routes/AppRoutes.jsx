@@ -14,7 +14,7 @@ import { AdminRoutes } from "../assets/constantData";
 import { ToastContainer } from "react-toastify";
 import Subscribers from "../page/AdminPanelPages/Subscribers";
 import Subscription from "../page/AdminPanelPages/Subscription/Subscription";
-import Score from "../page/Score.jsx";
+import Score from "../page/Score";
 
 const AppRoutes = () => {
   return (
