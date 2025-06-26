@@ -1,6 +1,6 @@
 import { AboutSecData, bannerData, contactData, howItWorkBullets, howItWorkObject, howItWorksData, itxSolutionImg, uploadRentalData } from "../../assets/constantData.jsx"
 import AboutUsSec from "./elements/AboutUsSec.jsx"
-import Banner from "./elements/banner"
+import Banner from "./elements/Banner.jsx"
 import ContactSection from "./elements/ContactSection.jsx"
 import FAQs from "./elements/FAQs.jsx"
 import HowItWorks from "./elements/HowItWorks.jsx"
