@@ -7,7 +7,12 @@ import DbConnection from './Database/Connection.js';
 const app = express();
 dotenv.config();
 app.use(express.json());
-app.use(cors());
+app.use(
+    cors({
+      origin: "https://ai-analying-tool-9jbc.vercel.app/", // ✅ Your actual frontend domain
+      credentials: true, // ✅ Important if you're sending cookies or headers
+    })
+  );
 
 const PORT = process.env.PORT;
 
