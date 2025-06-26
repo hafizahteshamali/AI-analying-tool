@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from "react-toastify"; // Optional if you want to show toast here directly
 
 const Authapi = axios.create({
-  baseURL: "https://ai-analying-tool-git-main-ahteshamalis-projects.vercel.app/",
+  baseURL: "http://localhost:8050",
   timeout: 5000,
   headers: {
     "Content-Type": "application/json",
