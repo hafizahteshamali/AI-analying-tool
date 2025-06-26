@@ -75,7 +75,7 @@ const Header = () => {
       const response = await postRequest("/api/auth/signup", signupData);
       console.log(response);
       toast.success(response?.data?.message);
-      // sessionStorage.setItem("email", response?.data?.user?.email);
+      sessionStorage.setItem("email", response?.data?.email);
       setOtpPurpose("signup");
       signupForm.reset();
       setTimeout(() => {

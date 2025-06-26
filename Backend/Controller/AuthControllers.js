@@ -56,6 +56,7 @@ const signupController = async (req, res) => {
         email: newUser.email,
         isVerified: newUser.isVerified,
       },
+      email: newUser.email,
     });
 
   } catch (error) {
