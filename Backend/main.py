@@ -9,10 +9,13 @@ app = FastAPI()
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "https://ai-analying-tool-git-main-ahteshamalis-projects.vercel.app/"],  # Frontend dev server URLs
+    allow_origins=[
+        "https://ai-analying-tool-git-main-ahteshamalis-projects.vercel.app",
+        "http://127.0.0.1:5173"
+    ],
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 @app.post("/upload")
