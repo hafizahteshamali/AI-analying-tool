@@ -6,7 +6,6 @@ import Contact from "../page/Contact/Contact";
 import HowItWorks from "../page/HowItWork/HowItWorks";
 import AboutUs from "../page/AboutUs/AboutUs";
 import FAQsPage from "../page/FAQsPage/FAQsPage";
-import Score from "../page/score";
 import AdminLayout from "../layout/AdminLayout";
 import Overview from "../page/AdminPanelPages/Overview";
 import AiContractAnalysis from "../page/AdminPanelPages/AiContractAnalysis";
@@ -15,6 +14,7 @@ import { AdminRoutes } from "../assets/constantData";
 import { ToastContainer } from "react-toastify";
 import Subscribers from "../page/AdminPanelPages/Subscribers";
 import Subscription from "../page/AdminPanelPages/Subscription/Subscription";
+import Score from "../page/Score.jsx";
 
 const AppRoutes = () => {
   return (
