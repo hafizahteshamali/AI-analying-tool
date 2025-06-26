@@ -20,6 +20,7 @@ app.add_middleware(
         "http://localhost:5173",           # Vite default
         "http://127.0.0.1:5173",          # Local frontend (vite)
         "https://ai-analying-tool.vercel.app",  # Your Vercel frontend URL
+        "https://ai-analying-tool-git-main-ahteshamalis-projects.vercel.app",
         "https://*.vercel.app",            # Allow all Vercel preview deployments
     ],
     allow_credentials=True,
