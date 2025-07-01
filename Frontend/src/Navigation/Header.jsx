@@ -78,7 +78,8 @@ const Header = () => {
     try {
       const response = await postRequest("/api/auth/signup", signupData);
       console.log(response);
-      toast.success(response?.data?.message);
+      if(response?.status === 201){
+        toast.success(response?.data?.message);
       sessionStorage.setItem("email", response?.data?.email);
       setOtpPurpose("signup");
       signupForm.reset();
@@ -86,6 +87,7 @@ const Header = () => {
         setIsSignupModalShow(false);
         setIsOptModalShow(true);
       }, 3000);
+      }
     } catch (error) {
       signupForm.reset();
       console.log("error:", error);
@@ -96,7 +98,8 @@ const Header = () => {
     try {
       const response = await postRequest("/api/auth/login", loginData);
       console.log(response);
-      toast.success(response?.data.message);
+      if(response?.status === 200){
+        toast.success(response?.data.message);
       sessionStorage.setItem("loginToken", response?.data.token);
       sessionStorage.setItem("userInfo", JSON.stringify(response?.data?.user));
       loginForm.reset();
@@ -109,6 +112,7 @@ const Header = () => {
       setTimeout(() => {
         setIsLoginModalShow(false);
       }, 2000);
+      }
     } catch (error) {
       loginForm.reset();
       console.log("error: ", error);
