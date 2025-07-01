@@ -77,7 +77,6 @@ const Header = () => {
   const onSignupSubmit = async (signupData) => {
     try {
       const response = await postRequest("/api/auth/signup", signupData);
-      console.log(response);
       if(response?.status === 201){
         toast.success(response?.data?.message);
       sessionStorage.setItem("email", response?.data?.email);
@@ -97,7 +96,6 @@ const Header = () => {
   const onLoginSubmit = async (loginData) => {
     try {
       const response = await postRequest("/api/auth/login", loginData);
-      console.log(response);
       if(response?.status === 200){
         toast.success(response?.data.message);
       sessionStorage.setItem("loginToken", response?.data.token);
