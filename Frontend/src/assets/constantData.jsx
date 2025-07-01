@@ -222,11 +222,11 @@ export const howItWorkBullets = [
 ];
 
 export const itxSolutionImg = [
-  "./assets/images/Home/ITX- Solution.png",
-  "./assets/images/Home/ITX- Solution.png",
-  "./assets/images/Home/ITX- Solution.png",
-  "./assets/images/Home/ITX- Solution.png",
-  "./assets/images/Home/ITX- Solution.png",
+  "/assets/images/Home/LOGO-white.png",
+  "/assets/images/Home/LOGO-white.png",
+  "/assets/images/Home/LOGO-white.png",
+  "/assets/images/Home/LOGO-white.png",
+  "/assets/images/Home/LOGO-white.png"
 ];
 
 export const accordionData = [

@@ -287,7 +287,7 @@ const Header = () => {
           <NavLink to="/">
             <img
               src="/assets/images/Home/LOGO.png"
-              className="h-[70px] w-[120px] p-1 object-contain"
+              className="w-[180px] p-1 object-contain"
               alt=""
             />
           </NavLink>
