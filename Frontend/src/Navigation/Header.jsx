@@ -1,4 +1,3 @@
-"use client"
 
 import { NavLink } from "react-router-dom"
 import { useLocation, useNavigate } from "react-router-dom"
@@ -108,7 +107,7 @@ const Header = () => {
     try {
       const response = await postRequest("/api/auth/login", loginData)
       console.log(response)
-      toast.success(response?.data?.message || "Login successful!")
+      toast.success(response?.data?.message)
 
       if (typeof window !== "undefined") {
         sessionStorage.setItem("loginToken", response?.data.token)
@@ -132,7 +131,7 @@ const Header = () => {
     } catch (error) {
       loginForm.reset()
       console.log("error: ", error)
-      toast.error(error?.response?.data?.message || "Login failed!")
+      toast.error(error?.response?.data?.message)
     } finally {
       setIsLoading(false)
     }
@@ -149,7 +148,7 @@ const Header = () => {
         if (typeof window !== "undefined") {
           sessionStorage.setItem("email", response?.data?.user?.email)
         }
-        toast.success(response?.data?.message || "OTP sent successfully!")
+        toast.success(response?.data?.message)
         setOtpPurpose("forgot_password")
         forgotForm.reset()
 
@@ -158,11 +157,11 @@ const Header = () => {
           setIsOptModalShow(true)
         }, 2000)
       } else {
-        toast.error(response?.data?.message || "Failed to send OTP!")
+        toast.error(response?.data?.message)
       }
     } catch (error) {
       console.log("error: ", error)
-      toast.error(error?.response?.data?.message || "Failed to send OTP!")
+      toast.error(error?.response?.data?.message)
     } finally {
       setIsLoading(false)
     }
@@ -189,7 +188,7 @@ const Header = () => {
       })
 
       if (response?.status === 200) {
-        toast.success(response.data.message || "OTP verified successfully!")
+        toast.success(response.data.message)
 
         // Clear OTP fields
         inputsRef.current.forEach((input) => {
@@ -201,11 +200,11 @@ const Header = () => {
           setIsLoginModalShow(true)
         }, 2000)
       } else {
-        toast.error(response?.data?.message || "Invalid OTP!")
+        toast.error(response?.data?.message)
       }
     } catch (error) {
       console.log("❌ OTP Error:", error)
-      toast.error(error?.response?.data?.message || "OTP verification failed!")
+      toast.error(error?.response?.data?.message)
     } finally {
       setIsLoading(false)
     }
@@ -232,7 +231,7 @@ const Header = () => {
       })
 
       if (response?.status === 201) {
-        toast.success(response.data.message || "OTP verified successfully!")
+        toast.success(response.data.message)
 
         // Clear OTP fields
         inputsRef.current.forEach((input) => {
@@ -244,11 +243,11 @@ const Header = () => {
           setIsResetPassModalShow(true)
         }, 2000)
       } else {
-        toast.error(response?.data?.message || "Invalid OTP!")
+        toast.error(response?.data?.message)
       }
     } catch (error) {
       console.log("error", error)
-      toast.error(error?.response?.data?.message || "OTP verification failed!")
+      toast.error(error?.response?.data?.message)
     } finally {
       setIsLoading(false)
     }
@@ -273,7 +272,7 @@ const Header = () => {
         newPassword,
       })
 
-      toast.success(response?.data?.message || "Password reset successfully!")
+      toast.success(response?.data?.message)
       resetForm.reset()
 
       setTimeout(() => {
@@ -282,7 +281,7 @@ const Header = () => {
       }, 2000)
     } catch (error) {
       console.log("error:", error)
-      toast.error(error?.response?.data?.message || "Failed to reset password!")
+      toast.error(error?.response?.data?.message)
     } finally {
       setIsLoading(false)
     }
