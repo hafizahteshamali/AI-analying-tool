@@ -1,379 +1,370 @@
-
-import { NavLink } from "react-router-dom"
-import { useLocation, useNavigate } from "react-router-dom"
-import { IoMenu } from "react-icons/io5"
-import { useEffect, useRef, useState } from "react"
-import { CgCloseR } from "react-icons/cg"
-import Button from "../components/Button"
-import { useForm } from "react-hook-form"
-import { toast } from "react-toastify"
-import { FaRegCircleUser } from "react-icons/fa6"
-import Plans from "../components/Plans"
-import Modal from "../components/Modal"
-import { postRequest } from "../api/AuthAxios"
-import { loginUserOptions, NavigationData, PlansData } from "../assets/constantData"
+import { NavLink } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { IoMenu } from "react-icons/io5";
+import { useEffect, useRef, useState } from "react";
+import { CgCloseR } from "react-icons/cg";
+import Button from "../components/Button";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { FaRegCircleUser } from "react-icons/fa6";
+import Plans from "../components/Plans";
+import Modal from "../components/Modal";
+import { postRequest } from "../api/AuthAxios";
+import {
+  loginUserOptions,
+  NavigationData,
+  PlansData,
+} from "../assets/constantData";
 
 const Header = () => {
-  const [isModal, setIsModal] = useState(false)
-  const [isLoginModalShow, setIsLoginModalShow] = useState(false)
-  const [isSignupModalShow, setIsSignupModalShow] = useState(false)
-  const [isForgotPassModalShow, setIsForgotPassModalShow] = useState(false)
-  const [isResetPassModalShow, setIsResetPassModalShow] = useState(false)
-  const [isOptModalShow, setIsOptModalShow] = useState(false)
-  const [isEmail, setIsEmail] = useState("")
-  const inputsRef = useRef([])
-  const [otpPurpose, setOtpPurpose] = useState("")
-  const [isUserLogin, setIsUserLogin] = useState(false)
-  const [isLoginPersonOpenShow, setIsLoginPersonOpenShow] = useState(false)
-  const [loginUserName, setLoginUserName] = useState(null)
-  const [isPremiumModal, setIsPremiumModal] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isModal, setIsModal] = useState(false);
+  const [isLoginModalShow, setIsLoginModalShow] = useState(false);
+  const [isSignupModalShow, setIsSignupModalShow] = useState(false);
+  const [isForgotPassModalShow, setIsForgotPassModalShow] = useState(false);
+  const [isResetPassModalShow, setIsResetPassModalShow] = useState(false);
+  const [isOptModalShow, setIsOptModalShow] = useState(false);
+  const [isEmail, setIsEmail] = useState("");
+  const inputsRef = useRef([]);
+  const [otpPurpose, setOtpPurpose] = useState("");
+  const [isUserLogin, setIsUserLogin] = useState(false);
+  const [isLoginPersonOpenShow, setIsLoginPersonOpenShow] = useState(false);
+  const [loginUserName, setLoginUserName] = useState(null);
+  const [isPremiumModal, setIsPremiumModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const pathname = useLocation().pathname;
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // Separate useForm instances for each form
-  const signupForm = useForm()
-  const loginForm = useForm()
-  const forgotForm = useForm()
-  const resetForm = useForm()
-  const otpForm = useForm()
+  const signupForm = useForm();
+  const loginForm = useForm();
+  const forgotForm = useForm();
+  const resetForm = useForm();
+  const otpForm = useForm();
 
   const loginOpenModalClose = () => {
-    setIsModal(false)
-    setIsLoginModalShow(true)
-  }
+    setIsModal(false);
+    setIsLoginModalShow(true);
+  };
 
   const SignupOpenModalClose = () => {
-    setIsModal(false)
-    setIsSignupModalShow(true)
-    setIsLoginModalShow(false)
-  }
+    setIsModal(false);
+    setIsSignupModalShow(true);
+    setIsLoginModalShow(false);
+  };
 
   const forgotPassOpenLoginClose = () => {
-    setIsLoginModalShow(false)
-    setIsForgotPassModalShow(true)
-  }
+    setIsLoginModalShow(false);
+    setIsForgotPassModalShow(true);
+  };
 
   const handleChange = (e, index) => {
-    const value = e.target.value
+    const value = e.target.value;
     if (value && index < 5) {
-      inputsRef.current[index + 1]?.focus()
+      inputsRef.current[index + 1]?.focus();
     }
-  }
+  };
 
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace") {
-      e.target.value = ""
+      e.target.value = "";
       if (index > 0) {
-        inputsRef.current[index - 1]?.focus()
+        inputsRef.current[index - 1]?.focus();
       }
     }
-  }
+  };
 
   const onSignupSubmit = async (signupData) => {
-    if (isLoading) return
-    setIsLoading(true)
-
     try {
-      const response = await postRequest("/api/auth/signup", signupData)
-      console.log(response)
-      toast.success(response?.data?.message || "Signup successful!")
-
-      if (typeof window !== "undefined") {
-        sessionStorage.setItem("email", response?.data?.email)
-      }
-
-      setOtpPurpose("signup")
-      signupForm.reset()
-
+      const response = await postRequest("/api/auth/signup", signupData);
+      console.log(response);
+      toast.success(response?.data?.message);
+      sessionStorage.setItem("email", response?.data?.email);
+      setOtpPurpose("signup");
+      signupForm.reset();
       setTimeout(() => {
-        setIsSignupModalShow(false)
-        setIsOptModalShow(true)
-      }, 2000)
+        setIsSignupModalShow(false);
+        setIsOptModalShow(true);
+      }, 3000);
     } catch (error) {
-      signupForm.reset()
-      console.log("error:", error)
-      toast.error(error?.response?.data?.message || "Signup failed!")
-    } finally {
-      setIsLoading(false)
+      signupForm.reset();
+      console.log("error:", error);
     }
-  }
+  };
 
   const onLoginSubmit = async (loginData) => {
-    if (isLoading) return
-    setIsLoading(true)
-
     try {
-      const response = await postRequest("/api/auth/login", loginData)
-      console.log(response)
-      toast.success(response?.data?.message)
-
-      if (typeof window !== "undefined") {
-        sessionStorage.setItem("loginToken", response?.data.token)
-        sessionStorage.setItem("userInfo", JSON.stringify(response?.data?.user))
-      }
-
-      loginForm.reset()
-
-      const token = typeof window !== "undefined" ? sessionStorage.getItem("loginToken") : null
-      const userInformation =
-        typeof window !== "undefined" ? JSON.parse(sessionStorage.getItem("userInfo") || "{}") : {}
-
+      const response = await postRequest("/api/auth/login", loginData);
+      console.log(response);
+      toast.success(response?.data.message);
+      sessionStorage.setItem("loginToken", response?.data.token);
+      sessionStorage.setItem("userInfo", JSON.stringify(response?.data?.user));
+      loginForm.reset();
+      const token = sessionStorage.getItem("loginToken");
+      const userInformation = JSON.parse(sessionStorage.getItem("userInfo"));
       if (token && userInformation) {
-        setLoginUserName(userInformation.fname)
-        setIsUserLogin(true)
+        setLoginUserName(userInformation.fname);
+        setIsUserLogin(true);
       }
-
       setTimeout(() => {
-        setIsLoginModalShow(false)
-      }, 2000)
+        setIsLoginModalShow(false);
+      }, 2000);
     } catch (error) {
-      loginForm.reset()
-      console.log("error: ", error)
-      toast.error(error?.response?.data?.message)
-    } finally {
-      setIsLoading(false)
+      loginForm.reset();
+      console.log("error: ", error);
     }
-  }
+  };
 
   const onForgotSubmit = async (forgotData) => {
-    if (isLoading) return
-    setIsLoading(true)
+    if (isLoading) return;
+    setIsLoading(true);
 
     try {
-      const response = await postRequest("/api/auth/forgot-password", forgotData)
+      const response = await postRequest(
+        "/api/auth/forgot-password",
+        forgotData
+      );
 
       if (response?.status === 201) {
         if (typeof window !== "undefined") {
-          sessionStorage.setItem("email", response?.data?.user?.email)
+          sessionStorage.setItem("email", response?.data?.user?.email);
         }
-        toast.success(response?.data?.message)
-        setOtpPurpose("forgot_password")
-        forgotForm.reset()
+        toast.success(response?.data?.message);
+        setOtpPurpose("forgot_password");
+        forgotForm.reset();
 
         setTimeout(() => {
-          setIsForgotPassModalShow(false)
-          setIsOptModalShow(true)
-        }, 2000)
+          setIsForgotPassModalShow(false);
+          setIsOptModalShow(true);
+        }, 2000);
       } else {
-        toast.error(response?.data?.message)
+        toast.error(response?.data?.message);
       }
     } catch (error) {
-      console.log("error: ", error)
-      toast.error(error?.response?.data?.message)
+      console.log("error: ", error);
+      toast.error(error?.response?.data?.message);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const onSignupOtpSubmit = async () => {
-    if (isLoading) return
-    setIsLoading(true)
+    if (isLoading) return;
+    setIsLoading(true);
 
-    const otp = inputsRef.current.map((input) => input?.value || "").join("")
+    const otp = inputsRef.current.map((input) => input?.value || "").join("");
 
     if (otp.length !== 6) {
-      toast.error("Please enter complete OTP")
-      setIsLoading(false)
-      return
+      toast.error("Please enter complete OTP");
+      setIsLoading(false);
+      return;
     }
 
     try {
-      const email = typeof window !== "undefined" ? sessionStorage.getItem("email") : null
+      const email =
+        typeof window !== "undefined" ? sessionStorage.getItem("email") : null;
       const response = await postRequest("/api/auth/verify-otp-signup", {
         email,
         otp,
         purpose: "signup",
-      })
+      });
 
       if (response?.status === 200) {
-        toast.success(response.data.message)
+        toast.success(response.data.message);
 
         // Clear OTP fields
         inputsRef.current.forEach((input) => {
-          if (input) input.value = ""
-        })
+          if (input) input.value = "";
+        });
 
         setTimeout(() => {
-          setIsOptModalShow(false)
-          setIsLoginModalShow(true)
-        }, 2000)
+          setIsOptModalShow(false);
+          setIsLoginModalShow(true);
+        }, 2000);
       } else {
-        toast.error(response?.data?.message)
+        toast.error(response?.data?.message);
       }
     } catch (error) {
-      console.log("❌ OTP Error:", error)
-      toast.error(error?.response?.data?.message)
+      console.log("❌ OTP Error:", error);
+      toast.error(error?.response?.data?.message);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const onForgotOtpSubmit = async () => {
-    if (isLoading) return
-    setIsLoading(true)
+    if (isLoading) return;
+    setIsLoading(true);
 
-    const otp = inputsRef.current.map((input) => input?.value || "").join("")
+    const otp = inputsRef.current.map((input) => input?.value || "").join("");
 
     if (otp.length !== 6) {
-      toast.error("Please enter complete OTP")
-      setIsLoading(false)
-      return
+      toast.error("Please enter complete OTP");
+      setIsLoading(false);
+      return;
     }
 
     try {
-      const email = typeof window !== "undefined" ? sessionStorage.getItem("email") : null
-      const response = await postRequest("/api/auth/verify-otp-forgot-password", {
-        email,
-        otp,
-        purpose: "forgot_password",
-      })
+      const email =
+        typeof window !== "undefined" ? sessionStorage.getItem("email") : null;
+      const response = await postRequest(
+        "/api/auth/verify-otp-forgot-password",
+        {
+          email,
+          otp,
+          purpose: "forgot_password",
+        }
+      );
 
       if (response?.status === 201) {
-        toast.success(response.data.message)
+        toast.success(response.data.message);
 
         // Clear OTP fields
         inputsRef.current.forEach((input) => {
-          if (input) input.value = ""
-        })
+          if (input) input.value = "";
+        });
 
         setTimeout(() => {
-          setIsOptModalShow(false)
-          setIsResetPassModalShow(true)
-        }, 2000)
+          setIsOptModalShow(false);
+          setIsResetPassModalShow(true);
+        }, 2000);
       } else {
-        toast.error(response?.data?.message)
+        toast.error(response?.data?.message);
       }
     } catch (error) {
-      console.log("error", error)
-      toast.error(error?.response?.data?.message)
+      console.log("error", error);
+      toast.error(error?.response?.data?.message);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const onResetSubmit = async (resetData) => {
-    if (isLoading) return
-    setIsLoading(true)
+    if (isLoading) return;
+    setIsLoading(true);
 
-    const { newPassword, cPassword } = resetData
+    const { newPassword, cPassword } = resetData;
 
     if (newPassword !== cPassword) {
-      toast.error("Passwords do not match.")
-      setIsLoading(false)
-      return
+      toast.error("Passwords do not match.");
+      setIsLoading(false);
+      return;
     }
 
     try {
-      const email = typeof window !== "undefined" ? sessionStorage.getItem("email") : null
+      const email =
+        typeof window !== "undefined" ? sessionStorage.getItem("email") : null;
       const response = await postRequest("/api/auth/reset-password", {
         email,
         newPassword,
-      })
+      });
 
-      toast.success(response?.data?.message)
-      resetForm.reset()
+      toast.success(response?.data?.message);
+      resetForm.reset();
 
       setTimeout(() => {
-        setIsResetPassModalShow(false)
-        setIsLoginModalShow(true)
-      }, 2000)
+        setIsResetPassModalShow(false);
+        setIsLoginModalShow(true);
+      }, 2000);
     } catch (error) {
-      console.log("error:", error)
-      toast.error(error?.response?.data?.message)
+      console.log("error:", error);
+      toast.error(error?.response?.data?.message);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const Logout = () => {
     if (typeof window !== "undefined") {
-      sessionStorage.removeItem("loginToken")
-      sessionStorage.removeItem("userInfo")
+      sessionStorage.removeItem("loginToken");
+      sessionStorage.removeItem("userInfo");
     }
-    setIsUserLogin(false)
-    setLoginUserName(null)
-    setIsLoginPersonOpenShow(false)
-    toast.success("Logout successfully")
+    setIsUserLogin(false);
+    setLoginUserName(null);
+    setIsLoginPersonOpenShow(false);
+    toast.success("Logout successfully");
 
     setTimeout(() => {
-      navigate("/")
-    }, 1500)
-  }
+      navigate("/");
+    }, 1500);
+  };
 
   // Handle email masking
   useEffect(() => {
     if (isOptModalShow && typeof window !== "undefined") {
-      const email = sessionStorage.getItem("email")
+      const email = sessionStorage.getItem("email");
       if (email) {
-        const [prefix, domain] = email.split("@")
-        const last4 = prefix.slice(-4)
-        const masked = "*".repeat(Math.max(prefix.length - 4, 0))
-        const finalEmail = `${masked}${last4}@${domain}`
-        setIsEmail(finalEmail)
+        const [prefix, domain] = email.split("@");
+        const last4 = prefix.slice(-4);
+        const masked = "*".repeat(Math.max(prefix.length - 4, 0));
+        const finalEmail = `${masked}${last4}@${domain}`;
+        setIsEmail(finalEmail);
       }
     }
-  }, [isOptModalShow])
+  }, [isOptModalShow]);
 
   // Check login status on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const token = sessionStorage.getItem("loginToken")
-      const userInformation = sessionStorage.getItem("userInfo")
+      const token = sessionStorage.getItem("loginToken");
+      const userInformation = sessionStorage.getItem("userInfo");
 
       if (token && userInformation) {
         try {
-          const parsedUser = JSON.parse(userInformation)
-          setIsUserLogin(true)
-          setLoginUserName(parsedUser.fname)
+          const parsedUser = JSON.parse(userInformation);
+          setIsUserLogin(true);
+          setLoginUserName(parsedUser.fname);
         } catch (error) {
-          console.error("Error parsing user info:", error)
-          sessionStorage.removeItem("userInfo")
-          sessionStorage.removeItem("loginToken")
+          console.error("Error parsing user info:", error);
+          sessionStorage.removeItem("userInfo");
+          sessionStorage.removeItem("loginToken");
         }
       }
     }
-  }, [])
+  }, []);
 
   // Show premium modal on home page
   useEffect(() => {
     if (pathname === "/") {
       const timer = setTimeout(() => {
-        setIsPremiumModal(true)
-      }, 1500)
+        setIsPremiumModal(true);
+      }, 1500);
 
-      return () => clearTimeout(timer)
+      return () => clearTimeout(timer);
     }
-  }, [pathname])
+  }, [pathname]);
 
   // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (isModal && !event.target.closest(".mobile-menu")) {
-        setIsModal(false)
+        setIsModal(false);
       }
-    }
+    };
 
     if (isModal) {
-      document.addEventListener("mousedown", handleClickOutside)
-      document.body.style.overflow = "hidden"
+      document.addEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = "unset"
+      document.body.style.overflow = "unset";
     }
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-      document.body.style.overflow = "unset"
-    }
-  }, [isModal])
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "unset";
+    };
+  }, [isModal]);
 
   return (
     <>
       <div className="container mx-auto">
         <div className="w-[100%] bg-[#E5E7EB] rounded-lg px-5 py-2 flex justify-between items-center">
           <NavLink to="/">
-            <img src="/assets/images/Home/LOGO.png" className="w-[180px] p-1 object-contain" alt="ITX Solution Logo" />
+            <img
+              src="/assets/images/Home/LOGO.png"
+              className="w-[180px] p-1 object-contain"
+              alt="ITX Solution Logo"
+            />
           </NavLink>
 
           <ul className="hidden lg:flex justify-center items-center gap-5">
@@ -389,7 +380,7 @@ const Header = () => {
                     {nav.text}
                   </NavLink>
                 </li>
-              )
+              );
             })}
           </ul>
 
@@ -397,7 +388,9 @@ const Header = () => {
             {isUserLogin ? (
               <div className="order-2">
                 <button
-                  onClick={() => setIsLoginPersonOpenShow(!isLoginPersonOpenShow)}
+                  onClick={() =>
+                    setIsLoginPersonOpenShow(!isLoginPersonOpenShow)
+                  }
                   className="text-4xl cursor-pointer text-[var(--secondary-color)] hover:text-[var(--green-color)] transition-colors"
                   aria-label="User menu"
                 >
@@ -449,7 +442,10 @@ const Header = () => {
                   <ul className="flex flex-col gap-7 my-10">
                     {loginUserOptions.map((adminOp, index) => {
                       return (
-                        <li key={index} onClick={() => setIsLoginPersonOpenShow(false)}>
+                        <li
+                          key={index}
+                          onClick={() => setIsLoginPersonOpenShow(false)}
+                        >
                           <NavLink
                             className="text-xl flex text-[var(--secondary-color)] font-[500] hover:text-[var(--green-color)] transition-colors"
                             to={adminOp.path}
@@ -457,7 +453,7 @@ const Header = () => {
                             {adminOp.text}
                           </NavLink>
                         </li>
-                      )
+                      );
                     })}
                     <li>
                       <button
@@ -503,7 +499,7 @@ const Header = () => {
                   {item.text}
                 </NavLink>
               </li>
-            )
+            );
           })}
         </ul>
 
@@ -526,7 +522,10 @@ const Header = () => {
       </div>
 
       {/* Signup Modal */}
-      <Modal isOpen={isSignupModalShow} onClose={() => setIsSignupModalShow(false)}>
+      <Modal
+        isOpen={isSignupModalShow}
+        onClose={() => setIsSignupModalShow(false)}
+      >
         <button
           onClick={() => setIsSignupModalShow(false)}
           className="text-3xl absolute top-5 right-5 cursor-pointer text-[var(--secondary-color)] hover:text-[var(--green-color)] transition-colors z-10"
@@ -555,28 +554,40 @@ const Header = () => {
             >
               <div className="w-[100%] flex my-3 justify-between items-center gap-4">
                 <div className="flex-col w-[48%]">
-                  <label className="text-xl font-[400] mb-3 block">Vorname</label>
+                  <label className="text-xl font-[400] mb-3 block">
+                    Vorname
+                  </label>
                   <input
                     type="text"
                     placeholder="Vorname"
-                    {...signupForm.register("fname", { required: "Vorname ist erforderlich" })}
+                    {...signupForm.register("fname", {
+                      required: "Vorname ist erforderlich",
+                    })}
                     className="h-[50px] w-[100%] bg-white rounded-lg border-2 border-[var(--black-color)] p-5 outline-none focus:border-[var(--green-color)] transition-colors"
                   />
                   {signupForm.formState.errors.fname && (
-                    <span className="text-red-500 text-sm">{signupForm.formState.errors.fname.message}</span>
+                    <span className="text-red-500 text-sm">
+                      {signupForm.formState.errors.fname.message}
+                    </span>
                   )}
                 </div>
 
                 <div className="flex-col w-[48%]">
-                  <label className="text-xl font-[400] mb-3 block">Nachname</label>
+                  <label className="text-xl font-[400] mb-3 block">
+                    Nachname
+                  </label>
                   <input
                     type="text"
                     placeholder="Nachname"
-                    {...signupForm.register("lname", { required: "Nachname ist erforderlich" })}
+                    {...signupForm.register("lname", {
+                      required: "Nachname ist erforderlich",
+                    })}
                     className="h-[50px] w-[100%] bg-white rounded-lg border-2 border-[var(--black-color)] p-5 outline-none focus:border-[var(--green-color)] transition-colors"
                   />
                   {signupForm.formState.errors.lname && (
-                    <span className="text-red-500 text-sm">{signupForm.formState.errors.lname.message}</span>
+                    <span className="text-red-500 text-sm">
+                      {signupForm.formState.errors.lname.message}
+                    </span>
                   )}
                 </div>
               </div>
@@ -596,7 +607,9 @@ const Header = () => {
                   className="h-[50px] w-[100%] bg-white rounded-lg border-2 border-[var(--black-color)] p-5 outline-none focus:border-[var(--green-color)] transition-colors"
                 />
                 {signupForm.formState.errors.email && (
-                  <span className="text-red-500 text-sm">{signupForm.formState.errors.email.message}</span>
+                  <span className="text-red-500 text-sm">
+                    {signupForm.formState.errors.email.message}
+                  </span>
                 )}
               </div>
 
@@ -615,7 +628,9 @@ const Header = () => {
                   className="h-[50px] w-[100%] bg-white rounded-lg border-2 border-[var(--black-color)] p-5 outline-none focus:border-[var(--green-color)] transition-colors"
                 />
                 {signupForm.formState.errors.password && (
-                  <span className="text-red-500 text-sm">{signupForm.formState.errors.password.message}</span>
+                  <span className="text-red-500 text-sm">
+                    {signupForm.formState.errors.password.message}
+                  </span>
                 )}
               </div>
 
@@ -631,15 +646,19 @@ const Header = () => {
             </form>
 
             <p className="text-[11px] text-center mt-4">
-              Indem Sie fortfahren, stimmen Sie den Servicebedingungen von Pinterest zu und bestätigen, dass Sie unsere
-              Datenschutzrichtlinie gelesen haben. Hinweis bei Erfassung.
+              Indem Sie fortfahren, stimmen Sie den Servicebedingungen von
+              Pinterest zu und bestätigen, dass Sie unsere Datenschutzrichtlinie
+              gelesen haben. Hinweis bei Erfassung.
             </p>
           </div>
         </div>
       </Modal>
 
       {/* Login Modal */}
-      <Modal isOpen={isLoginModalShow} onClose={() => setIsLoginModalShow(false)}>
+      <Modal
+        isOpen={isLoginModalShow}
+        onClose={() => setIsLoginModalShow(false)}
+      >
         <button
           onClick={() => setIsLoginModalShow(false)}
           className="text-3xl absolute top-5 right-5 cursor-pointer text-[var(--secondary-color)] hover:text-[var(--green-color)] transition-colors z-10"
@@ -681,7 +700,9 @@ const Header = () => {
                   className="h-[50px] w-[100%] bg-white rounded-lg border-2 border-[var(--black-color)] p-5 outline-none focus:border-[var(--green-color)] transition-colors"
                 />
                 {loginForm.formState.errors.email && (
-                  <span className="text-red-500 text-sm">{loginForm.formState.errors.email.message}</span>
+                  <span className="text-red-500 text-sm">
+                    {loginForm.formState.errors.email.message}
+                  </span>
                 )}
               </div>
 
@@ -690,11 +711,15 @@ const Header = () => {
                 <input
                   type="password"
                   placeholder="Passwort"
-                  {...loginForm.register("password", { required: "Passwort ist erforderlich" })}
+                  {...loginForm.register("password", {
+                    required: "Passwort ist erforderlich",
+                  })}
                   className="h-[50px] w-[100%] bg-white rounded-lg border-2 border-[var(--black-color)] p-5 outline-none focus:border-[var(--green-color)] transition-colors"
                 />
                 {loginForm.formState.errors.password && (
-                  <span className="text-red-500 text-sm">{loginForm.formState.errors.password.message}</span>
+                  <span className="text-red-500 text-sm">
+                    {loginForm.formState.errors.password.message}
+                  </span>
                 )}
               </div>
 
@@ -724,15 +749,19 @@ const Header = () => {
             </form>
 
             <p className="text-[11px] text-center mt-4">
-              Indem Sie fortfahren, stimmen Sie den Servicebedingungen von Pinterest zu und bestätigen, dass Sie unsere
-              Datenschutzrichtlinie gelesen haben. Hinweis bei Erfassung.
+              Indem Sie fortfahren, stimmen Sie den Servicebedingungen von
+              Pinterest zu und bestätigen, dass Sie unsere Datenschutzrichtlinie
+              gelesen haben. Hinweis bei Erfassung.
             </p>
           </div>
         </div>
       </Modal>
 
       {/* Forgot Password Modal */}
-      <Modal isOpen={isForgotPassModalShow} onClose={() => setIsForgotPassModalShow(false)}>
+      <Modal
+        isOpen={isForgotPassModalShow}
+        onClose={() => setIsForgotPassModalShow(false)}
+      >
         <button
           onClick={() => setIsForgotPassModalShow(false)}
           className="text-3xl absolute top-5 right-5 cursor-pointer text-[var(--secondary-color)] hover:text-[var(--green-color)] transition-colors z-10"
@@ -774,7 +803,9 @@ const Header = () => {
                   className="h-[50px] w-[100%] bg-white rounded-lg border-2 border-[var(--black-color)] p-5 outline-none focus:border-[var(--green-color)] transition-colors"
                 />
                 {forgotForm.formState.errors.email && (
-                  <span className="text-red-500 text-sm">{forgotForm.formState.errors.email.message}</span>
+                  <span className="text-red-500 text-sm">
+                    {forgotForm.formState.errors.email.message}
+                  </span>
                 )}
               </div>
 
@@ -790,15 +821,19 @@ const Header = () => {
             </form>
 
             <p className="text-[11px] text-center mt-4">
-              Indem Sie fortfahren, stimmen Sie den Servicebedingungen von Pinterest zu und bestätigen, dass Sie unsere
-              Datenschutzrichtlinie gelesen haben. Hinweis bei Erfassung.
+              Indem Sie fortfahren, stimmen Sie den Servicebedingungen von
+              Pinterest zu und bestätigen, dass Sie unsere Datenschutzrichtlinie
+              gelesen haben. Hinweis bei Erfassung.
             </p>
           </div>
         </div>
       </Modal>
 
       {/* Reset Password Modal */}
-      <Modal isOpen={isResetPassModalShow} onClose={() => setIsResetPassModalShow(false)}>
+      <Modal
+        isOpen={isResetPassModalShow}
+        onClose={() => setIsResetPassModalShow(false)}
+      >
         <button
           onClick={() => setIsResetPassModalShow(false)}
           className="text-3xl absolute top-5 right-5 cursor-pointer text-[var(--secondary-color)] hover:text-[var(--green-color)] transition-colors z-10"
@@ -826,7 +861,9 @@ const Header = () => {
               onSubmit={resetForm.handleSubmit(onResetSubmit)}
             >
               <div className="w-[100%] flex flex-col my-3 justify-center items-start">
-                <label className="text-xl font-[400] mb-3">Neues Passwort</label>
+                <label className="text-xl font-[400] mb-3">
+                  Neues Passwort
+                </label>
                 <input
                   type="password"
                   placeholder="Neues Passwort"
@@ -840,20 +877,28 @@ const Header = () => {
                   className="h-[50px] w-[100%] bg-white rounded-lg border-2 border-[var(--black-color)] p-5 outline-none text-black focus:border-[var(--green-color)] transition-colors"
                 />
                 {resetForm.formState.errors.newPassword && (
-                  <span className="text-red-500 text-sm">{resetForm.formState.errors.newPassword.message}</span>
+                  <span className="text-red-500 text-sm">
+                    {resetForm.formState.errors.newPassword.message}
+                  </span>
                 )}
               </div>
 
               <div className="w-[100%] flex flex-col my-3 justify-center items-start">
-                <label className="text-xl font-[400] mb-3">Passwort bestätigen</label>
+                <label className="text-xl font-[400] mb-3">
+                  Passwort bestätigen
+                </label>
                 <input
                   type="password"
                   placeholder="Passwort bestätigen"
-                  {...resetForm.register("cPassword", { required: "Passwort bestätigen ist erforderlich" })}
+                  {...resetForm.register("cPassword", {
+                    required: "Passwort bestätigen ist erforderlich",
+                  })}
                   className="h-[50px] w-[100%] bg-white rounded-lg border-2 border-[var(--black-color)] p-5 outline-none text-black focus:border-[var(--green-color)] transition-colors"
                 />
                 {resetForm.formState.errors.cPassword && (
-                  <span className="text-red-500 text-sm">{resetForm.formState.errors.cPassword.message}</span>
+                  <span className="text-red-500 text-sm">
+                    {resetForm.formState.errors.cPassword.message}
+                  </span>
                 )}
               </div>
 
@@ -869,8 +914,9 @@ const Header = () => {
             </form>
 
             <p className="text-[11px] text-center mt-4">
-              Indem Sie fortfahren, stimmen Sie den Nutzungsbedingungen von Pinterest zu und bestätigen, dass Sie unsere
-              Datenschutzrichtlinie gelesen haben. Hinweis bei der Erfassung.
+              Indem Sie fortfahren, stimmen Sie den Nutzungsbedingungen von
+              Pinterest zu und bestätigen, dass Sie unsere Datenschutzrichtlinie
+              gelesen haben. Hinweis bei der Erfassung.
             </p>
           </div>
         </div>
@@ -900,7 +946,9 @@ const Header = () => {
               OTP-Verifizierung
             </h1>
 
-            <p className="mb-6 text-sm sm:text-[13px] text-center">Ein OTP-Code wurde an {isEmail} gesendet.</p>
+            <p className="mb-6 text-sm sm:text-[13px] text-center">
+              Ein OTP-Code wurde an {isEmail} gesendet.
+            </p>
 
             <form
               className="flex flex-col items-center w-full"
@@ -934,8 +982,9 @@ const Header = () => {
             </form>
 
             <p className="text-[11px] text-center mt-4 px-2">
-              Indem Sie fortfahren, stimmen Sie den Servicebedingungen von Pinterest zu und bestätigen, dass Sie unsere
-              Datenschutzrichtlinie gelesen haben. Hinweis bei Erfassung.
+              Indem Sie fortfahren, stimmen Sie den Servicebedingungen von
+              Pinterest zu und bestätigen, dass Sie unsere Datenschutzrichtlinie
+              gelesen haben. Hinweis bei Erfassung.
             </p>
           </div>
         </div>
@@ -957,19 +1006,20 @@ const Header = () => {
               Flexible <span className="text-[var(--black-color)]">Pläne</span>
             </h1>
             <p className="lg:w-[80%] mx-auto text-center my-2">
-              Wählen Sie einen Plan, der für Sie und Ihr Team am besten geeignet ist.
+              Wählen Sie einen Plan, der für Sie und Ihr Team am besten geeignet
+              ist.
             </p>
           </div>
 
           <div className="w-full flex flex-wrap justify-center items-center gap-7 md:gap-4 lg:gap-7">
             {PlansData.map((item, index) => {
-              return <Plans key={index} data={item} />
+              return <Plans key={index} data={item} />;
             })}
           </div>
         </div>
       </Modal>
     </>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;
