@@ -1,6 +1,7 @@
 "use client"
 
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { IoMenu } from "react-icons/io5"
 import { useEffect, useRef, useState } from "react"
 import { CgCloseR } from "react-icons/cg"
@@ -8,10 +9,10 @@ import Button from "../components/Button"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 import { FaRegCircleUser } from "react-icons/fa6"
-import Plans from "../components/Plans"
-import Modal from "../components/Modal"
+import Plans from "../components/plans"
+import Modal from "../components/modal"
 import { postRequest } from "../api/AuthAxios"
-import { loginUserOptions, NavigationData, PlansData } from "../assets/constantData";
+import { loginUserOptions, NavigationData, PlansData } from "../assets/constantData"
 
 const Header = () => {
   const [isModal, setIsModal] = useState(false)
@@ -442,7 +443,7 @@ const Header = () => {
                   </p>
                   <NavLink
                     className="flex justify-center border-2 border-[#14B8A6] w-[100%] mx-auto p-2 rounded-full font-[400] hover:bg-[#14B8A6] hover:text-white transition-all"
-                    to="/"
+                    to="/account"
                   >
                     Verwalten Sie Ihr Konto
                   </NavLink>
