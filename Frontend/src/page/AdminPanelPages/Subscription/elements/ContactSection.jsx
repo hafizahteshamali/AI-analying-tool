@@ -63,15 +63,15 @@ const ContactSection = ({connectTeamBannerData, contactFormDetails}) => {
             </div>
           </div>
 
-          <div className="w-[100%] md:w-[80%] lg:w-[45%] h-[95%] my-5 rounded-lg flex flex-col justify-center items-start">
-            <h1 className="text-4xl text-[var(--secondary-color)] font-[500] my-4">
+          <div className="w-[100%] md:w-[80%] lg:w-[45%] h-[95%] my-5 rounded-lg flex flex-col p-3 justify-center items-start">
+            <h1 className="text-4xl text-[var(--secondary-color)] font-[500] my-4 ">
               {heading}
             </h1>
             <p className="text-[18px] font-[500] text-[var(--secondary-color)]">
               {description}
             </p>
 
-            <div className="w-full flex flex-wrap my-5 gap-4 justify-between items-center p-3">
+            <div className="w-full flex flex-wrap my-5 gap-4 justify-between items-center">
               <>
                 {socialLinks.map((sl, index) => {
                   return (

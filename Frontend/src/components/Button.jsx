@@ -1,12 +1,13 @@
-
-const Button = ({type, className, text, onClick}) => {
+const Button = ({ onClick, className, text, disabled = false, type = "button" }) => {
   return (
-    <>
-    {type ? (
-      <button className={`${className}`} type={type}>{text}</button>
-    ) : <button className={`${className}`} onClick={onClick}>{text}</button>}
-    
-    </>
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={`${className} ${disabled ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"} transition-all`}
+    >
+      {text}
+    </button>
   )
 }
 
