@@ -8,9 +8,12 @@ import { AipostReq } from "../api/AiAnalyticsAxios"
 const Score = () => {
   const [file, setFile] = useState(null)
   const [fileName, setFileName] = useState("")
-  const [uploading, setUploading] = useState(false)
+  const [uploading, setUploading] = useState(false);
   const [isAllowed, setIsAllowed] = useState(false)
   const [isResponse, setIsResponse] = useState([])
+  const [isIllegal, setIsIllegal] = useState([])
+  const [isQuestionable, setIsQuestionable] = useState([])
+  const [islegal, setIslegal] = useState([])
 
   // Animation states
   const [animatedRiskScore, setAnimatedRiskScore] = useState(0)
@@ -30,41 +33,43 @@ const Score = () => {
 
   // Animate when response comes
   useEffect(() => {
-    if (isResponse?.risk_score_percent) {
-      setShowAnimation(true)
-
-      const riskTarget = Number.parseInt(isResponse.risk_score_percent)
-      let riskCurrent = 0
-      const riskIncrement = riskTarget / 50
-
+    if (isResponse?.risk_score_percentage) {
+      setShowAnimation(true);
+  
+      const riskTarget = parseInt(isResponse.risk_score_percentage);
+      const rentTarget = 14;
+  
+      let riskCurrent = 0;
+      let rentCurrent = 0;
+  
+      const riskIncrement = riskTarget / 50;
+      const rentIncrement = rentTarget / 50;
+  
       const riskInterval = setInterval(() => {
-        riskCurrent += riskIncrement
+        riskCurrent += riskIncrement;
         if (riskCurrent >= riskTarget) {
-          riskCurrent = riskTarget
-          clearInterval(riskInterval)
+          riskCurrent = riskTarget;
+          clearInterval(riskInterval);
         }
-        setAnimatedRiskScore(Math.round(riskCurrent))
-      }, 40)
-
-      const rentTarget = 14
-      let rentCurrent = 0
-      const rentIncrement = rentTarget / 50
-
+        setAnimatedRiskScore(Math.round(riskCurrent));
+      }, 40);
+  
       const rentInterval = setInterval(() => {
-        rentCurrent += rentIncrement
+        rentCurrent += rentIncrement;
         if (rentCurrent >= rentTarget) {
-          rentCurrent = rentTarget
-          clearInterval(rentInterval)
+          rentCurrent = rentTarget;
+          clearInterval(rentInterval);
         }
-        setAnimatedRentScore(Math.round(rentCurrent))
-      }, 40)
-
+        setAnimatedRentScore(Math.round(rentCurrent));
+      }, 40);
+  
       return () => {
-        clearInterval(riskInterval)
-        clearInterval(rentInterval)
-      }
+        clearInterval(riskInterval);
+        clearInterval(rentInterval);
+      };
     }
-  }, [isResponse])
+  }, [isResponse]);
+  
 
    // 🔄 Only updates file & name
    const handleFileChange = (e) => {
@@ -75,23 +80,26 @@ const Score = () => {
 
   // 🔁 Hit API only when user clicks button
   const handleUpload = async (e) => {
-    e.preventDefault()
-    if (!file) return
+    e.preventDefault();
+    if (!file) return;
 
-    const formData = new FormData()
-    formData.append("file", file)
+    const formData = new FormData();
+    formData.append("file", file);
 
     try {
-      setUploading(true)
-      const response = await AipostReq("/analyze", formData)
-      console.log("✅ Upload Response:", response)
-      setIsResponse(response?.data)
+      setUploading(true);
+      const response = await AipostReq("/analyze", formData);
+      console.log("✅ Upload Response:", response);
+      setIsIllegal(response?.data?.clauses_german?.illegal)
+      setIsQuestionable(response?.data?.clauses_german?.questionable)
+      setIslegal(response?.data?.clauses_german?.legal)
+      setIsResponse(response?.data);
     } catch (error) {
-      console.error("❌ Upload Error:", error)
+      console.error("❌ Upload Error:", error);
     } finally {
-      setUploading(false)
+      setUploading(false);
     }
-  }
+  };
 
   if (!isAllowed) return null
 
@@ -130,11 +138,41 @@ const Score = () => {
               </label>
 
               {fileName && (
-                <Button
+                <button
                   type="submit"
-                  className="h-[50px] w-[80%] lg:w-[40%] bg-green-600 text-white py-2 rounded hover:bg-green-700 disabled:opacity-50 transition-colors duration-300"
-                  text={uploading ? "Analysiere..." : "Analyse starten"}
-                />
+                  disabled={uploading}
+                  className={`h-[50px] w-[80%] lg:w-[40%] text-white py-2 rounded transition-colors duration-300 ${
+                    uploading
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-green-600 hover:bg-green-700"
+                  }`}
+                >
+                  {uploading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg
+                        className="animate-spin h-5 w-5 text-white"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                        ></path>
+                      </svg>
+                      Analysiere...
+                    </span>
+                  ) : (
+                    "Analyse starten"
+                  )}
+                </button>
               )}
             </div>
           </div>
@@ -201,13 +239,21 @@ const Score = () => {
           <div className="w-[100%] my-4 border border-gray-300 rounded-lg overflow-hidden shadow-sm">
             <div className="flex justify-between items-center bg-white p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200">
               <div className="w-[70%]">
-                <p className="text-gray-800">Laut OGH darf der Mieter nicht zur Renovierung (z. B. Ausmalen) verpflichtet werden, wenn keine übermäßige Abnützung vorliegt – das ist Sache des Vermieters.</p>
+                {isIllegal.map((ill, index)=>{
+                  return(
+                    <p key={index} className="text-gray-800">{ill}</p>
+                  )
+                })}
               </div>
               <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-medium">illegal</span>
             </div>
             <div className="flex justify-between items-center bg-white p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200">
               <div className="w-[70%]">
-                <p className="text-gray-800">Laut § 3 MRG dürfen Erhaltungskosten nicht auf den Mieter überwälzt werden. Diese Klausel könnte daher teilweise unzulässig sein.</p>
+                {isQuestionable.map((ques, index)=>{
+                  return(
+                    <p key={index} className="text-gray-800">{ques}</p>
+                  )
+                })}
               </div>
               <span className="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-sm font-medium">
                 Fragwürdig
@@ -215,7 +261,11 @@ const Score = () => {
             </div>
             <div className="flex justify-between items-center bg-white p-4 hover:bg-gray-50 transition-colors duration-200">
               <div className="w-[70%]">
-                <p className="text-gray-800">Solche Verpflichtungen sind zulässig, solange sie nicht unverhältnismäßig oder unzumutbar sind. In der Praxis wird das von Gerichten regelmäßig anerkannt.</p>
+                {islegal.map((leg, index)=>{
+                  return(
+                    <p key={index} className="text-gray-800">{leg}</p>
+                  )
+                })}
               </div>
               <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm font-medium">legal</span>
             </div>
