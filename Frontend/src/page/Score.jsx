@@ -83,7 +83,7 @@ const Score = () => {
 
     try {
       setUploading(true)
-      const response = await AipostReq("/upload", formData)
+      const response = await AipostReq("/analyze", formData)
       console.log("✅ Upload Response:", response)
       setIsResponse(response?.data)
     } catch (error) {

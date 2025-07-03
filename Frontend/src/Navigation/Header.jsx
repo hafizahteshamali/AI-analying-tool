@@ -75,49 +75,71 @@ const Header = () => {
   };
 
   const onSignupSubmit = async (signupData) => {
+    if (isLoading) return;
+    setIsLoading(true);
+  
     try {
       const response = await postRequest("/api/auth/signup", signupData);
       console.log(response);
-      if(response?.status === 201){
+  
+      if (response?.status === 201) {
         toast.success(response?.data?.message);
-      sessionStorage.setItem("email", response?.data?.email);
-      setOtpPurpose("signup");
-      signupForm.reset();
-      setTimeout(() => {
-        setIsSignupModalShow(false);
-        setIsOptModalShow(true);
-      }, 3000);
+        sessionStorage.setItem("email", response?.data?.email);
+        setOtpPurpose("signup");
+        signupForm?.reset();
+  
+        setTimeout(() => {
+          setIsSignupModalShow(false);
+          setIsOptModalShow(true);
+        }, 3000);
+      } else {
+        toast.error(response?.data?.message);
       }
     } catch (error) {
-      signupForm.reset();
+      signupForm?.reset();
       console.log("error:", error);
+      toast.error(error?.response?.data?.message);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  };  
 
   const onLoginSubmit = async (loginData) => {
+    if (isLoading) return;
+    setIsLoading(true);
+  
     try {
       const response = await postRequest("/api/auth/login", loginData);
       console.log(response);
-      if(response?.status === 200){
+  
+      if (response?.status === 200) {
         toast.success(response?.data.message);
-      sessionStorage.setItem("loginToken", response?.data.token);
-      sessionStorage.setItem("userInfo", JSON.stringify(response?.data?.user));
-      loginForm.reset();
-      const token = sessionStorage.getItem("loginToken");
-      const userInformation = JSON.parse(sessionStorage.getItem("userInfo"));
-      if (token && userInformation) {
-        setLoginUserName(userInformation.fname);
-        setIsUserLogin(true);
-      }
-      setTimeout(() => {
-        setIsLoginModalShow(false);
-      }, 2000);
+        sessionStorage.setItem("loginToken", response?.data.token);
+        sessionStorage.setItem("userInfo", JSON.stringify(response?.data?.user));
+        loginForm?.reset();
+  
+        const token = sessionStorage.getItem("loginToken");
+        const userInformation = JSON.parse(sessionStorage.getItem("userInfo"));
+  
+        if (token && userInformation) {
+          setLoginUserName(userInformation.fname);
+          setIsUserLogin(true);
+        }
+  
+        setTimeout(() => {
+          setIsLoginModalShow(false);
+        }, 2000);
+      } else {
+        toast.error(response?.data?.message);
       }
     } catch (error) {
-      loginForm.reset();
+      loginForm?.reset();
       console.log("error: ", error);
+      toast.error(error?.response?.data?.message);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  };  
 
   const onForgotSubmit = async (forgotData) => {
     if (isLoading) return;
