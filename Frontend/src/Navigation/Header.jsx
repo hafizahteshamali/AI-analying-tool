@@ -526,21 +526,26 @@ const Header = () => {
         </button>
 
         <ul className="flex flex-col justify-center mx-0 items-start gap-5">
-          {NavigationData.map((item, index) => {
-            return (
-              <li key={index}>
-                <NavLink
-                  className={`text-[var(--secondary-color)] text-xl font-[500] hover:text-[var(--green-color)] transition-colors ${
-                    pathname === item.url ? "text-[var(--green-color)]" : ""
-                  }`}
-                  to={item.url}
-                  onClick={() => setIsModal(false)}
-                >
-                  {item.text}
-                </NavLink>
-              </li>
-            );
-          })}
+          {NavigationData.map((nav, index) => {
+        const isActive = pathname === nav.url;
+        const commonClass = `text-[var(--secondary-color)] font-[500] hover:text-[var(--green-color)] transition-colors ${
+          isActive ? "text-[var(--green-color)]" : ""
+        }`;
+
+        return (
+          <li key={index}>
+            {nav.url === "/score" ? (
+              <button onClick={handleProtectedNavigation} className={commonClass}>
+                {nav.text}
+              </button>
+            ) : (
+              <NavLink to={nav.url} className={commonClass}>
+                {nav.text}
+              </NavLink>
+            )}
+          </li>
+        );
+      })}
         </ul>
 
         {!isUserLogin && (
