@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Header from '../../../Navigation/Header'
 import Button from '../../../components/Button';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -10,7 +10,6 @@ import { toast } from 'react-toastify';
 
 const Banner = ({ bannerData }) => {
 
-  const navigate = useNavigate();
   const [isLoginModalShow, setIsLoginModalShow] = useState(false);
   const [isSignupModalShow, setIsSignupModalShow] = useState(false);
   const [isForgotPassModalShow, setIsForgotPassModalShow] = useState(false);
@@ -20,19 +19,31 @@ const Banner = ({ bannerData }) => {
   const [isEmail, setIsEmail] = useState("");
   const [otpPurpose, setOtpPurpose] = useState("");
   const inputsRef = useRef([]);
+  const [loginUserName, setLoginUserName] = useState(null);
+  const [isUserLogin, setIsUserLogin] = useState(false);
 
 
-  const loginForm = useForm();
   const signupForm = useForm();
+  const loginForm = useForm();
   const forgotForm = useForm();
   const otpForm = useForm();
   const resetForm = useForm();
+  const navigate = useNavigate();
 
   const { lgHeading, para, btnText } = bannerData;
 
   const SignupOpenModalClose = () => {
     setIsSignupModalShow(true);
     setIsLoginModalShow(false);
+  };
+
+  const handleProtectedNavigation = () => {
+    const token = sessionStorage.getItem("loginToken");
+    if (token) {
+      navigate("/score");
+    } else {
+      setIsLoginModalShow(true);
+    }
   };
 
   const onSignupSubmit = async (signupData) => {
@@ -89,7 +100,9 @@ const Banner = ({ bannerData }) => {
 
         setTimeout(() => {
           setIsLoginModalShow(false);
+
           navigate("/score")
+          console.log("navigate nhi hua")
         }, 2000);
       } else {
         toast.error(response?.data?.message);
@@ -102,6 +115,7 @@ const Banner = ({ bannerData }) => {
       setIsLoading(false);
     }
   };
+
 
   const onForgotSubmit = async (forgotData) => {
     if (isLoading) return;
@@ -139,15 +153,6 @@ const Banner = ({ bannerData }) => {
   const forgotPassOpenLoginClose = () => {
     setIsLoginModalShow(false);
     setIsForgotPassModalShow(true);
-  };
-
-  const handleProtectedNavigation = () => {
-    const token = sessionStorage.getItem("loginToken");
-    if (token) {
-      navigate("/score");
-    } else {
-      setIsLoginModalShow(true);
-    }
   };
 
   const handleChange = (e, index) => {
@@ -291,6 +296,26 @@ const Banner = ({ bannerData }) => {
       setIsLoading(false);
     }
   };
+
+
+  useEffect(() => {
+      if (typeof window !== "undefined") {
+        const token = sessionStorage.getItem("loginToken");
+        const userInformation = sessionStorage.getItem("userInfo");
+  
+        if (token && userInformation) {
+          try {
+            const parsedUser = JSON.parse(userInformation);
+            setIsUserLogin(true);
+            setLoginUserName(parsedUser.fname);
+          } catch (error) {
+            console.error("Error parsing user info:", error);
+            sessionStorage.removeItem("userInfo");
+            sessionStorage.removeItem("loginToken");
+          }
+        }
+      }
+    }, []);
 
   return (
     <>
