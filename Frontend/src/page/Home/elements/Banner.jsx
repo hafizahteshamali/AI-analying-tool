@@ -14,8 +14,8 @@ const Banner = ({ bannerData }) => {
   const [isLoginModalShow, setIsLoginModalShow] = useState(false);
   const [isSignupModalShow, setIsSignupModalShow] = useState(false);
   const [isForgotPassModalShow, setIsForgotPassModalShow] = useState(false);
-   const [isOptModalShow, setIsOptModalShow] = useState(false);
-   const [isResetPassModalShow, setIsResetPassModalShow] = useState(false);
+  const [isOptModalShow, setIsOptModalShow] = useState(false);
+  const [isResetPassModalShow, setIsResetPassModalShow] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isEmail, setIsEmail] = useState("");
   const [otpPurpose, setOtpPurpose] = useState("");
@@ -167,130 +167,130 @@ const Banner = ({ bannerData }) => {
   };
 
   const onSignupOtpSubmit = async () => {
-      if (isLoading) return;
-      setIsLoading(true);
-  
-      const otp = inputsRef.current.map((input) => input?.value || "").join("");
-  
-      if (otp.length !== 6) {
-        toast.error("Please enter complete OTP");
-        setIsLoading(false);
-        return;
+    if (isLoading) return;
+    setIsLoading(true);
+
+    const otp = inputsRef.current.map((input) => input?.value || "").join("");
+
+    if (otp.length !== 6) {
+      toast.error("Please enter complete OTP");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const email =
+        typeof window !== "undefined" ? sessionStorage.getItem("email") : null;
+      const response = await postRequest("/api/auth/verify-otp-signup", {
+        email,
+        otp,
+        purpose: "signup",
+      });
+
+      if (response?.status === 200) {
+        toast.success(response.data.message);
+
+        // Clear OTP fields
+        inputsRef.current.forEach((input) => {
+          if (input) input.value = "";
+        });
+
+        setTimeout(() => {
+          setIsOptModalShow(false);
+          setIsLoginModalShow(true);
+        }, 2000);
+      } else {
+        toast.error(response?.data?.message);
       }
-  
-      try {
-        const email =
-          typeof window !== "undefined" ? sessionStorage.getItem("email") : null;
-        const response = await postRequest("/api/auth/verify-otp-signup", {
+    } catch (error) {
+      console.log("❌ OTP Error:", error);
+      toast.error(error?.response?.data?.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onForgotOtpSubmit = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
+
+    const otp = inputsRef.current.map((input) => input?.value || "").join("");
+
+    if (otp.length !== 6) {
+      toast.error("Please enter complete OTP");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const email =
+        typeof window !== "undefined" ? sessionStorage.getItem("email") : null;
+      const response = await postRequest(
+        "/api/auth/verify-otp-forgot-password",
+        {
           email,
           otp,
-          purpose: "signup",
-        });
-  
-        if (response?.status === 200) {
-          toast.success(response.data.message);
-  
-          // Clear OTP fields
-          inputsRef.current.forEach((input) => {
-            if (input) input.value = "";
-          });
-  
-          setTimeout(() => {
-            setIsOptModalShow(false);
-            setIsLoginModalShow(true);
-          }, 2000);
-        } else {
-          toast.error(response?.data?.message);
+          purpose: "forgot_password",
         }
-      } catch (error) {
-        console.log("❌ OTP Error:", error);
-        toast.error(error?.response?.data?.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-  
-    const onForgotOtpSubmit = async () => {
-      if (isLoading) return;
-      setIsLoading(true);
-  
-      const otp = inputsRef.current.map((input) => input?.value || "").join("");
-  
-      if (otp.length !== 6) {
-        toast.error("Please enter complete OTP");
-        setIsLoading(false);
-        return;
-      }
-  
-      try {
-        const email =
-          typeof window !== "undefined" ? sessionStorage.getItem("email") : null;
-        const response = await postRequest(
-          "/api/auth/verify-otp-forgot-password",
-          {
-            email,
-            otp,
-            purpose: "forgot_password",
-          }
-        );
-  
-        if (response?.status === 201) {
-          toast.success(response.data.message);
-  
-          // Clear OTP fields
-          inputsRef.current.forEach((input) => {
-            if (input) input.value = "";
-          });
-  
-          setTimeout(() => {
-            setIsOptModalShow(false);
-            setIsResetPassModalShow(true);
-          }, 2000);
-        } else {
-          toast.error(response?.data?.message);
-        }
-      } catch (error) {
-        console.log("error", error);
-        toast.error(error?.response?.data?.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      );
 
-    const onResetSubmit = async (resetData) => {
-        if (isLoading) return;
-        setIsLoading(true);
-    
-        const { newPassword, cPassword } = resetData;
-    
-        if (newPassword !== cPassword) {
-          toast.error("Passwords do not match.");
-          setIsLoading(false);
-          return;
-        }
-    
-        try {
-          const email =
-            typeof window !== "undefined" ? sessionStorage.getItem("email") : null;
-          const response = await postRequest("/api/auth/reset-password", {
-            email,
-            newPassword,
-          });
-    
-          toast.success(response?.data?.message);
-          resetForm.reset();
-    
-          setTimeout(() => {
-            setIsResetPassModalShow(false);
-            setIsLoginModalShow(true);
-          }, 2000);
-        } catch (error) {
-          console.log("error:", error);
-          toast.error(error?.response?.data?.message);
-        } finally {
-          setIsLoading(false);
-        }
-      };
+      if (response?.status === 201) {
+        toast.success(response.data.message);
+
+        // Clear OTP fields
+        inputsRef.current.forEach((input) => {
+          if (input) input.value = "";
+        });
+
+        setTimeout(() => {
+          setIsOptModalShow(false);
+          setIsResetPassModalShow(true);
+        }, 2000);
+      } else {
+        toast.error(response?.data?.message);
+      }
+    } catch (error) {
+      console.log("error", error);
+      toast.error(error?.response?.data?.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onResetSubmit = async (resetData) => {
+    if (isLoading) return;
+    setIsLoading(true);
+
+    const { newPassword, cPassword } = resetData;
+
+    if (newPassword !== cPassword) {
+      toast.error("Passwords do not match.");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const email =
+        typeof window !== "undefined" ? sessionStorage.getItem("email") : null;
+      const response = await postRequest("/api/auth/reset-password", {
+        email,
+        newPassword,
+      });
+
+      toast.success(response?.data?.message);
+      resetForm.reset();
+
+      setTimeout(() => {
+        setIsResetPassModalShow(false);
+        setIsLoginModalShow(true);
+      }, 2000);
+    } catch (error) {
+      console.log("error:", error);
+      toast.error(error?.response?.data?.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -620,74 +620,74 @@ const Banner = ({ bannerData }) => {
       </Modal>
 
       {/* OTP Modal */}
-            <Modal isOpen={isOptModalShow} onClose={() => setIsOptModalShow(false)}>
-              <button
-                onClick={() => setIsOptModalShow(false)}
-                className="text-3xl absolute top-5 right-5 cursor-pointer text-[var(--secondary-color)] hover:text-[var(--green-color)] transition-colors z-50"
-                aria-label="Close modal"
-              >
-                <CgCloseR />
-              </button>
-      
-              <div className="w-full h-full px-4 sm:px-6 py-6 bg-[var(--white-color)] rounded-lg flex justify-center items-center overflow-y-auto">
-                <div className="w-full max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto py-3 flex flex-col items-center">
-                  <NavLink to="/">
-                    <img
-                      src="./assets/images/Home/LOGO.png"
-                      className="h-[60px] sm:h-[70px] w-[100px] sm:w-[120px] object-contain"
-                      alt="ITX Solution Logo"
-                    />
-                  </NavLink>
-      
-                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-[var(--black-color)] mb-4 text-center">
-                    OTP-Verifizierung
-                  </h1>
-      
-                  <p className="mb-6 text-sm sm:text-[13px] text-center">
-                    Ein OTP-Code wurde an {isEmail} gesendet.
-                  </p>
-      
-                  <form
-                    className="flex flex-col items-center w-full"
-                    onSubmit={
-                      otpPurpose === "signup"
-                        ? otpForm.handleSubmit(onSignupOtpSubmit)
-                        : otpForm.handleSubmit(onForgotOtpSubmit)
-                    }
-                  >
-                    <div className="flex flex-wrap justify-center gap-2 sm:gap-3 w-full mb-6">
-                      {[...Array(6)].map((_, index) => (
-                        <input
-                          key={index}
-                          type="text"
-                          maxLength="1"
-                          className="w-[45px] sm:w-[50px] md:w-[60px] h-[45px] sm:h-[50px] md:h-[60px] text-center text-xl border-2 border-black rounded-lg focus:border-[var(--green-color)] transition-colors outline-none"
-                          ref={(el) => (inputsRef.current[index] = el)}
-                          onChange={(e) => handleChange(e, index)}
-                          onKeyDown={(e) => handleKeyDown(e, index)}
-                        />
-                      ))}
-                    </div>
-      
-                    <button
-                      type="submit"
-                      disabled={isLoading}
-                      className="h-[50px] w-[70%] bg-[var(--green-color)] text-white text-base sm:text-lg rounded-lg cursor-pointer hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isLoading ? "Wird verarbeitet..." : "Verifizieren"}
-                    </button>
-                  </form>
-      
-                  <p className="text-[11px] text-center mt-4 px-2">
-                    Indem Sie fortfahren, stimmen Sie den Servicebedingungen von
-                    Pinterest zu und bestätigen, dass Sie unsere Datenschutzrichtlinie
-                    gelesen haben. Hinweis bei Erfassung.
-                  </p>
-                </div>
-              </div>
-            </Modal>
+      <Modal isOpen={isOptModalShow} onClose={() => setIsOptModalShow(false)}>
+        <button
+          onClick={() => setIsOptModalShow(false)}
+          className="text-3xl absolute top-5 right-5 cursor-pointer text-[var(--secondary-color)] hover:text-[var(--green-color)] transition-colors z-50"
+          aria-label="Close modal"
+        >
+          <CgCloseR />
+        </button>
 
-            {/* Reset Password Modal */}
+        <div className="w-full h-full px-4 sm:px-6 py-6 bg-[var(--white-color)] rounded-lg flex justify-center items-center overflow-y-auto">
+          <div className="w-full max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto py-3 flex flex-col items-center">
+            <NavLink to="/">
+              <img
+                src="./assets/images/Home/LOGO.png"
+                className="h-[60px] sm:h-[70px] w-[100px] sm:w-[120px] object-contain"
+                alt="ITX Solution Logo"
+              />
+            </NavLink>
+
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-[var(--black-color)] mb-4 text-center">
+              OTP-Verifizierung
+            </h1>
+
+            <p className="mb-6 text-sm sm:text-[13px] text-center">
+              Ein OTP-Code wurde an {isEmail} gesendet.
+            </p>
+
+            <form
+              className="flex flex-col items-center w-full"
+              onSubmit={
+                otpPurpose === "signup"
+                  ? otpForm.handleSubmit(onSignupOtpSubmit)
+                  : otpForm.handleSubmit(onForgotOtpSubmit)
+              }
+            >
+              <div className="flex flex-wrap justify-center gap-2 sm:gap-3 w-full mb-6">
+                {[...Array(6)].map((_, index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    maxLength="1"
+                    className="w-[45px] sm:w-[50px] md:w-[60px] h-[45px] sm:h-[50px] md:h-[60px] text-center text-xl border-2 border-black rounded-lg focus:border-[var(--green-color)] transition-colors outline-none"
+                    ref={(el) => (inputsRef.current[index] = el)}
+                    onChange={(e) => handleChange(e, index)}
+                    onKeyDown={(e) => handleKeyDown(e, index)}
+                  />
+                ))}
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="h-[50px] w-[70%] bg-[var(--green-color)] text-white text-base sm:text-lg rounded-lg cursor-pointer hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? "Wird verarbeitet..." : "Verifizieren"}
+              </button>
+            </form>
+
+            <p className="text-[11px] text-center mt-4 px-2">
+              Indem Sie fortfahren, stimmen Sie den Servicebedingungen von
+              Pinterest zu und bestätigen, dass Sie unsere Datenschutzrichtlinie
+              gelesen haben. Hinweis bei Erfassung.
+            </p>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Reset Password Modal */}
       <Modal
         isOpen={isResetPassModalShow}
         onClose={() => setIsResetPassModalShow(false)}
