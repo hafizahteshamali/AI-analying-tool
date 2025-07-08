@@ -15,9 +15,9 @@ import {
   PlansData,
 } from "../assets/constantData";
 
-const Header = () => {
+const Header = ({setIsLoginModalShow, isLoginModalShow}) => {
   const [isModal, setIsModal] = useState(false);
-  const [isLoginModalShow, setIsLoginModalShow] = useState(false);
+  
   const [isSignupModalShow, setIsSignupModalShow] = useState(false);
   const [isForgotPassModalShow, setIsForgotPassModalShow] = useState(false);
   const [isResetPassModalShow, setIsResetPassModalShow] = useState(false);
@@ -85,17 +85,17 @@ const Header = () => {
   const onSignupSubmit = async (signupData) => {
     if (isLoading) return;
     setIsLoading(true);
-  
+
     try {
       const response = await postRequest("/api/auth/signup", signupData);
       console.log(response);
-  
+
       if (response?.status === 201) {
         toast.success(response?.data?.message);
         sessionStorage.setItem("email", response?.data?.email);
         setOtpPurpose("signup");
         signupForm?.reset();
-  
+
         setTimeout(() => {
           setIsSignupModalShow(false);
           setIsOptModalShow(true);
@@ -110,30 +110,30 @@ const Header = () => {
     } finally {
       setIsLoading(false);
     }
-  };  
+  };
 
   const onLoginSubmit = async (loginData) => {
     if (isLoading) return;
     setIsLoading(true);
-  
+
     try {
       const response = await postRequest("/api/auth/login", loginData);
       console.log(response);
-  
+
       if (response?.status === 200) {
         toast.success(response?.data.message);
         sessionStorage.setItem("loginToken", response?.data.token);
         sessionStorage.setItem("userInfo", JSON.stringify(response?.data?.user));
         loginForm?.reset();
-  
+
         const token = sessionStorage.getItem("loginToken");
         const userInformation = JSON.parse(sessionStorage.getItem("userInfo"));
-  
+
         if (token && userInformation) {
           setLoginUserName(userInformation.fname);
           setIsUserLogin(true);
         }
-  
+
         setTimeout(() => {
           setIsLoginModalShow(false);
         }, 2000);
@@ -147,7 +147,7 @@ const Header = () => {
     } finally {
       setIsLoading(false);
     }
-  };  
+  };
 
   const onForgotSubmit = async (forgotData) => {
     if (isLoading) return;
@@ -358,15 +358,15 @@ const Header = () => {
   }, []);
 
   // Show premium modal on home page
-  useEffect(() => {
-    if (pathname === "/") {
-      const timer = setTimeout(() => {
-        setIsPremiumModal(true);
-      }, 1500);
+  // useEffect(() => {
+  //   if (pathname === "/") {
+  //     const timer = setTimeout(() => {
+  //       setIsPremiumModal(true);
+  //     }, 1500);
 
-      return () => clearTimeout(timer);
-    }
-  }, [pathname]);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [pathname]);
 
   // Close mobile menu when clicking outside
   useEffect(() => {
@@ -402,27 +402,26 @@ const Header = () => {
           </NavLink>
 
           <ul className="hidden lg:flex justify-center items-center gap-5">
-      {NavigationData.map((nav, index) => {
-        const isActive = pathname === nav.url;
-        const commonClass = `text-[var(--secondary-color)] font-[500] hover:text-[var(--green-color)] transition-colors ${
-          isActive ? "text-[var(--green-color)]" : ""
-        }`;
+            {NavigationData.map((nav, index) => {
+              const isActive = pathname === nav.url;
+              const commonClass = `text-[var(--secondary-color)] font-[500] hover:text-[var(--green-color)] transition-colors ${isActive ? "text-[var(--green-color)]" : ""
+                }`;
 
-        return (
-          <li key={index}>
-            {nav.url === "/score" ? (
-              <button onClick={handleProtectedNavigation} className={commonClass}>
-                {nav.text}
-              </button>
-            ) : (
-              <NavLink to={nav.url} className={commonClass}>
-                {nav.text}
-              </NavLink>
-            )}
-          </li>
-        );
-      })}
-    </ul>
+              return (
+                <li key={index}>
+                  {nav.url === "/score" ? (
+                    <button onClick={handleProtectedNavigation} className={commonClass}>
+                      {nav.text}
+                    </button>
+                  ) : (
+                    <NavLink to={nav.url} className={commonClass}>
+                      {nav.text}
+                    </NavLink>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
 
           <div className="flex gap-3.5 items-center relative">
             {isUserLogin ? (
@@ -513,9 +512,8 @@ const Header = () => {
 
       {/* Mobile Menu */}
       <div
-        className={`mobile-menu h-[100vh] w-[100%] sm:w-[70%] md:w-[50%] p-3 bg-[var(--primary-color)] flex flex-col justify-center items-center gap-6 fixed z-40 top-0 right-0 bottom-0 transform transition-all duration-500 ${
-          isModal ? "translate-x-[0%]" : "translate-x-[100%]"
-        }`}
+        className={`mobile-menu h-[100vh] w-[100%] sm:w-[70%] md:w-[50%] p-3 bg-[var(--primary-color)] flex flex-col justify-center items-center gap-6 fixed z-40 top-0 right-0 bottom-0 transform transition-all duration-500 ${isModal ? "translate-x-[0%]" : "translate-x-[100%]"
+          }`}
       >
         <button
           onClick={() => setIsModal(false)}
@@ -527,25 +525,24 @@ const Header = () => {
 
         <ul className="flex flex-col justify-center mx-0 items-start gap-5">
           {NavigationData.map((nav, index) => {
-        const isActive = pathname === nav.url;
-        const commonClass = `text-[var(--secondary-color)] font-[500] hover:text-[var(--green-color)] transition-colors ${
-          isActive ? "text-[var(--green-color)]" : ""
-        }`;
+            const isActive = pathname === nav.url;
+            const commonClass = `text-[var(--secondary-color)] font-[500] hover:text-[var(--green-color)] transition-colors ${isActive ? "text-[var(--green-color)]" : ""
+              }`;
 
-        return (
-          <li key={index}>
-            {nav.url === "/score" ? (
-              <button onClick={handleProtectedNavigation} className={commonClass}>
-                {nav.text}
-              </button>
-            ) : (
-              <NavLink to={nav.url} className={commonClass}>
-                {nav.text}
-              </NavLink>
-            )}
-          </li>
-        );
-      })}
+            return (
+              <li key={index}>
+                {nav.url === "/score" ? (
+                  <button onClick={handleProtectedNavigation} className={commonClass}>
+                    {nav.text}
+                  </button>
+                ) : (
+                  <NavLink to={nav.url} className={commonClass}>
+                    {nav.text}
+                  </NavLink>
+                )}
+              </li>
+            );
+          })}
         </ul>
 
         {!isUserLogin && (
