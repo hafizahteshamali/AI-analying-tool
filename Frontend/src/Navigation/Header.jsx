@@ -15,10 +15,11 @@ import {
   PlansData,
 } from "../assets/constantData";
 
-const Header = ({setIsLoginModalShow, isLoginModalShow}) => {
+const Header = () => {
   const [isModal, setIsModal] = useState(false);
   
   const [isSignupModalShow, setIsSignupModalShow] = useState(false);
+  const [isLoginModalShow, setIsLoginModalShow] = useState(false);
   const [isForgotPassModalShow, setIsForgotPassModalShow] = useState(false);
   const [isResetPassModalShow, setIsResetPassModalShow] = useState(false);
   const [isOptModalShow, setIsOptModalShow] = useState(false);
@@ -136,6 +137,7 @@ const Header = ({setIsLoginModalShow, isLoginModalShow}) => {
 
         setTimeout(() => {
           setIsLoginModalShow(false);
+          navigate("/score")
         }, 2000);
       } else {
         toast.error(response?.data?.message);
