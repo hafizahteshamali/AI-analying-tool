@@ -46,6 +46,15 @@ const Header = () => {
     setIsLoginModalShow(true);
   };
 
+  const handleProtectedNavigation = () => {
+    const token = sessionStorage.getItem("loginToken");
+    if (token) {
+      navigate("/score");
+    } else {
+      setIsLoginModalShow(true);
+    }
+  };
+
   const SignupOpenModalClose = () => {
     setIsModal(false);
     setIsSignupModalShow(true);
@@ -393,21 +402,27 @@ const Header = () => {
           </NavLink>
 
           <ul className="hidden lg:flex justify-center items-center gap-5">
-            {NavigationData.map((nav, index) => {
-              return (
-                <li key={index}>
-                  <NavLink
-                    className={`text-[var(--secondary-color)] font-[500] hover:text-[var(--green-color)] transition-colors ${
-                      pathname === nav.url ? "text-[var(--green-color)]" : ""
-                    }`}
-                    to={nav.url}
-                  >
-                    {nav.text}
-                  </NavLink>
-                </li>
-              );
-            })}
-          </ul>
+      {NavigationData.map((nav, index) => {
+        const isActive = pathname === nav.url;
+        const commonClass = `text-[var(--secondary-color)] font-[500] hover:text-[var(--green-color)] transition-colors ${
+          isActive ? "text-[var(--green-color)]" : ""
+        }`;
+
+        return (
+          <li key={index}>
+            {nav.url === "/score" ? (
+              <button onClick={handleProtectedNavigation} className={commonClass}>
+                {nav.text}
+              </button>
+            ) : (
+              <NavLink to={nav.url} className={commonClass}>
+                {nav.text}
+              </NavLink>
+            )}
+          </li>
+        );
+      })}
+    </ul>
 
           <div className="flex gap-3.5 items-center relative">
             {isUserLogin ? (

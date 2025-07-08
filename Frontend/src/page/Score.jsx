@@ -27,7 +27,7 @@ const Score = () => {
     if (token) {
       setIsAllowed(true)
     } else {
-      navigate("/")
+      navigate("/login")
     }
   }, [])
 
