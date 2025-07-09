@@ -1,50 +1,51 @@
-import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import { FaFile, FaFileUpload } from "react-icons/fa"
-import Button from "../components/Button"
-import Header from "../Navigation/Header"
-import { AipostReq } from "../api/AiAnalyticsAxios"
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaFile, FaFileUpload, FaHouseUser } from "react-icons/fa";
+import Button from "../components/Button";
+import Header from "../Navigation/Header";
+import { AipostReq } from "../api/AiAnalyticsAxios";
+import { IoLocationOutline } from "react-icons/io5";
 
 const Score = () => {
-  const [file, setFile] = useState(null)
-  const [fileName, setFileName] = useState("")
+  const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState("");
   const [uploading, setUploading] = useState(false);
-  const [isAllowed, setIsAllowed] = useState(false)
-  const [isResponse, setIsResponse] = useState([])
-  const [isIllegal, setIsIllegal] = useState([])
-  const [isQuestionable, setIsQuestionable] = useState([])
-  const [islegal, setIslegal] = useState([])
+  const [isAllowed, setIsAllowed] = useState(false);
+  const [isResponse, setIsResponse] = useState([]);
+  const [isIllegal, setIsIllegal] = useState([]);
+  const [isQuestionable, setIsQuestionable] = useState([]);
+  const [islegal, setIslegal] = useState([]);
 
   // Animation states
-  const [animatedRiskScore, setAnimatedRiskScore] = useState(0)
-  const [animatedRentScore, setAnimatedRentScore] = useState(0)
-  const [showAnimation, setShowAnimation] = useState(false)
+  const [animatedRiskScore, setAnimatedRiskScore] = useState(0);
+  const [animatedRentScore, setAnimatedRentScore] = useState(0);
+  const [showAnimation, setShowAnimation] = useState(false);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const token = sessionStorage.getItem("loginToken")
+    const token = sessionStorage.getItem("loginToken");
     if (token) {
-      setIsAllowed(true)
+      setIsAllowed(true);
     } else {
-      navigate("/")
+      navigate("/");
     }
-  }, [])
+  }, []);
 
   // Animate when response comes
   useEffect(() => {
     if (isResponse?.risk_score_percentage) {
       setShowAnimation(true);
-  
+
       const riskTarget = parseInt(isResponse.risk_score_percentage);
       const rentTarget = 14;
-  
+
       let riskCurrent = 0;
       let rentCurrent = 0;
-  
+
       const riskIncrement = riskTarget / 50;
       const rentIncrement = rentTarget / 50;
-  
+
       const riskInterval = setInterval(() => {
         riskCurrent += riskIncrement;
         if (riskCurrent >= riskTarget) {
@@ -53,7 +54,7 @@ const Score = () => {
         }
         setAnimatedRiskScore(Math.round(riskCurrent));
       }, 40);
-  
+
       const rentInterval = setInterval(() => {
         rentCurrent += rentIncrement;
         if (rentCurrent >= rentTarget) {
@@ -62,21 +63,20 @@ const Score = () => {
         }
         setAnimatedRentScore(Math.round(rentCurrent));
       }, 40);
-  
+
       return () => {
         clearInterval(riskInterval);
         clearInterval(rentInterval);
       };
     }
   }, [isResponse]);
-  
 
-   // 🔄 Only updates file & name
-   const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0]
-    setFile(selectedFile)
-    setFileName(selectedFile.name)
-  }
+  // 🔄 Only updates file & name
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+    setFileName(selectedFile.name);
+  };
 
   // 🔁 Hit API only when user clicks button
   const handleUpload = async (e) => {
@@ -90,9 +90,9 @@ const Score = () => {
       setUploading(true);
       const response = await AipostReq("/analyze", formData);
       console.log("✅ Upload Response:", response);
-      setIsIllegal(response?.data?.clauses_german?.illegal)
-      setIsQuestionable(response?.data?.clauses_german?.questionable)
-      setIslegal(response?.data?.clauses_german?.legal)
+      setIsIllegal(response?.data?.clauses_german?.illegal);
+      setIsQuestionable(response?.data?.clauses_german?.questionable);
+      setIslegal(response?.data?.clauses_german?.legal);
       setIsResponse(response?.data);
     } catch (error) {
       console.error("❌ Upload Error:", error);
@@ -101,7 +101,7 @@ const Score = () => {
     }
   };
 
-  if (!isAllowed) return null
+  if (!isAllowed) return null;
 
   return (
     <>
@@ -110,18 +110,30 @@ const Score = () => {
           <Header />
 
           <div className="text-center h-[300px] my-[50px] flex flex-col justify-center items-center">
-            <h1 className="text-white text-4xl font-bold">Mietvertrag KI-Analyse</h1>
+            <h1 className="text-white text-4xl font-bold">
+              Mietvertrag KI-Analyse
+            </h1>
             <p className="text-white text-[16px] w-[100%] lg:w-[80%] mx-auto mt-4">
-            Unsere Lösung liest und versteht Mietverträge automatisch, erkennt kritische Klauseln im Kontext aktueller OGH-Urteile und Gesetzeslagen, vergleicht die Miete mit dem aktuellen Index und zeigt Risiken klar verständlich an – Nutzer:innen können auf Knopfdruck einen vollständigen Prüfbericht erstellen oder direkt rechtliche Unterstützung anfordern
+              Unsere Lösung liest und versteht Mietverträge automatisch, erkennt
+              kritische Klauseln im Kontext aktueller OGH-Urteile und
+              Gesetzeslagen, vergleicht die Miete mit dem aktuellen Index und
+              zeigt Risiken klar verständlich an – Nutzer:innen können auf
+              Knopfdruck einen vollständigen Prüfbericht erstellen oder direkt
+              rechtliche Unterstützung anfordern
             </p>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto">
-      <form className="mt-10 rounded-md w-[90%] lg:w-[70%] mx-auto" onSubmit={handleUpload}>
+        <form
+          className="mt-10 rounded-md w-[90%] lg:w-[70%] mx-auto"
+          onSubmit={handleUpload}
+        >
           <div className="border-2 border-dashed border-gray-400 p-6 rounded-lg text-center flex flex-col justify-center items-center">
-            <p className="mb-4 font-semibold text-gray-800">PDF, DOCX, TXT – max. 5 MB</p>
+            <p className="mb-4 font-semibold text-gray-800">
+              PDF, DOCX, TXT – max. 5 MB
+            </p>
             <input
               type="file"
               accept=".pdf,.docx,.txt"
@@ -187,12 +199,18 @@ const Score = () => {
               ) : (
                 <>
                   <FaFileUpload className="text-7xl text-gray-500" />
-                  <label className="text-gray-500 text-[18px]">File Upload</label>
+                  <label className="text-gray-500 text-[18px]">
+                    File Upload
+                  </label>
                 </>
               )}
             </div>
 
-            <a href="#" download className="text-blue-600 hover:text-blue-800 transition-colors duration-300">
+            <a
+              href="#"
+              download
+              className="text-blue-600 hover:text-blue-800 transition-colors duration-300"
+            >
               Download
             </a>
           </div>
@@ -200,11 +218,15 @@ const Score = () => {
 
         {/* Risk Score Section */}
         <div className="w-[90%] lg:w-[70%] mx-auto mt-8">
-          <h1 className="text-2xl font-semibold text-gray-800">Ergebnisse der Analyse</h1>
+          <h1 className="text-2xl font-semibold text-gray-800">
+            Ergebnisse der Analyse
+          </h1>
 
           <div className="flex justify-between items-center my-4">
             <span className="text-lg font-medium">Risiko-Score</span>
-            <span className="text-lg font-bold text-orange-600">{showAnimation ? animatedRiskScore : 0}%</span>
+            <span className="text-lg font-bold text-orange-600">
+              {showAnimation ? animatedRiskScore : 0}%
+            </span>
           </div>
 
           <div className="w-full bg-gray-200 rounded-full h-6 overflow-hidden shadow-inner">
@@ -216,8 +238,8 @@ const Score = () => {
                   animatedRiskScore > 70
                     ? "linear-gradient(90deg, #ef4444, #dc2626)"
                     : animatedRiskScore > 40
-                      ? "linear-gradient(90deg, #f59e0b, #d97706)"
-                      : "linear-gradient(90deg, #10b981, #059669)",
+                    ? "linear-gradient(90deg, #f59e0b, #d97706)"
+                    : "linear-gradient(90deg, #10b981, #059669)",
                 boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
               }}
             >
@@ -226,33 +248,121 @@ const Score = () => {
           </div>
         </div>
 
-        {/* Contract Summary */}
+        {/* Contract Summary {isResponse.contract_summary_german} */}
         <div className="w-[90%] lg:w-[70%] mx-auto mt-8">
-          <h1 className="text-2xl font-semibold text-gray-800">Zusammenfassung der Analyse</h1>
-          <p className="my-4 text-gray-700 leading-relaxed">{isResponse.contract_summary_german}</p>
+          <h1 className="text-2xl my-3 font-semibold text-gray-800">
+            Zusammenfassung der Analyse
+          </h1>
+          <h2 className="text-2xl my-3 font-[600] text-gray-800">
+            Vertragsubersicht
+          </h2>
+
+          <div className="w-full border border-gray-300 rounded-lg p-4 flex flex-col lg:flex-row justify-between items-center gap-4">
+            <div className="w-full lg:w-[45%] border-r border-gray-300 p-2 flex justify-start items-center gap-5">
+              <div className="w-[60px] h-[60px] rounded-full bg-amber-300 overflow-hidden flex justify-center items-end">
+                <img
+                  src="/assets/images/Admin/male-user.png"
+                  className="h-[50px] w-[50px] object-contain"
+                  alt=""
+                />
+              </div>
+              <div>
+                <h3 className="text-xl text-gray-800">Herr Johannes Leitner</h3>
+                <p className="text-[12px] text-gray-500">
+                  Vortrag am 15, Jull 2025
+                </p>
+              </div>
+            </div>
+
+            <div className="w-full lg:w-[45%] flex justify-start p-2 items-center gap-5">
+              <div className="w-[60px] h-[60px] rounded-full bg-amber-300 overflow-hidden flex justify-center items-end">
+                <img
+                  src="/assets/images/Admin/female-user.png"
+                  className="h-[50px] w-[50px] object-contain"
+                  alt=""
+                />
+              </div>
+              <div>
+                <h3 className="text-xl text-gray-800">Frau Anna Berger</h3>
+                <p className="text-[12px] text-gray-500">
+                  Angefr : 15, Jul 2025
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <h2 className="text-2xl my-3 font-[600] text-gray-800">
+            Wohnobjekt
+          </h2>
+
+          <div className="w-full border border-gray-300 rounded-lg p-2 flex flex-col justify-between items-center gap-4">
+          <div className="w-full p-2 flex justify-start items-center gap-5 border-b-2 border-gray-300">
+              <div className="w-[60px] h-[60px] flex justify-center items-center">
+              <IoLocationOutline className="text-5xl text-gray-500" />
+              </div>
+              <div className="">
+                <h3 className="text-xl text-gray-800">HauptstraBe 25, 2. Stock, Tur 5, 1010 Wien</h3>
+              </div>
+            </div>
+
+            <div className="w-full p-2 flex justify-between items-center gap-5">
+
+            <div className="w-full lg:w-[50%] border-r border-gray-300 p-2 flex justify-start items-center gap-5">
+              <div className="w-[60px] h-[60px] flex justify-center items-center">
+                <FaHouseUser className="text-5xl text-gray-500" />
+              </div>
+              <div>
+                <p className="text-xl font-[500] text-gray-500">
+                  30 m<sup>2</sup>
+                </p>
+              </div>
+            </div>
+
+            <div className="w-full lg:w-[50%] border-r border-gray-300 p-2 flex justify-start items-center gap-5">
+              <div className="w-[60px] h-[60px] flex justify-center items-center">
+                <FaHouseUser className="text-5xl text-gray-500" />
+              </div>
+              <div>
+                <p className="text-xl font-[500] text-gray-500">
+                  30 m<sup>2</sup>
+                </p>
+              </div>
+            </div>
+            
+            </div>
+          </div>
+
         </div>
 
         {/* Clause Evaluation */}
         <div className="w-[90%] lg:w-[70%] mx-auto mt-8">
-          <h1 className="text-2xl font-semibold text-gray-800">Klauselbewertung</h1>
+          <h1 className="text-2xl font-semibold text-gray-800">
+            Klauselbewertung
+          </h1>
 
           <div className="w-[100%] my-4 border border-gray-300 rounded-lg overflow-hidden shadow-sm">
             <div className="flex justify-between items-center bg-white p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200">
               <div className="w-[70%]">
-                {isIllegal.map((ill, index)=>{
-                  return(
-                    <p key={index} className="text-gray-800">{ill}</p>
-                  )
+                {isIllegal.map((ill, index) => {
+                  return (
+                    <p key={index} className="text-gray-800">
+                      {ill}
+                    </p>
+                  );
                 })}
               </div>
-              <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-medium">illegal</span>
+              <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-medium">
+                illegal
+              </span>
             </div>
             <div className="flex justify-between items-center bg-white p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200">
               <div className="w-[70%]">
-                {isQuestionable.map((ques, index)=>{
-                  return(
-                    <p key={index} className="text-gray-800">{ques}</p>
-                  )
+                {isQuestionable.map((ques, index) => {
+                  return (
+                    <p key={index} className="text-gray-800">
+                      {ques}
+                    </p>
+                  );
                 })}
               </div>
               <span className="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-sm font-medium">
@@ -261,13 +371,17 @@ const Score = () => {
             </div>
             <div className="flex justify-between items-center bg-white p-4 hover:bg-gray-50 transition-colors duration-200">
               <div className="w-[70%]">
-                {islegal.map((leg, index)=>{
-                  return(
-                    <p key={index} className="text-gray-800">{leg}</p>
-                  )
+                {islegal.map((leg, index) => {
+                  return (
+                    <p key={index} className="text-gray-800">
+                      {leg}
+                    </p>
+                  );
                 })}
               </div>
-              <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm font-medium">legal</span>
+              <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm font-medium">
+                legal
+              </span>
             </div>
           </div>
         </div>
@@ -280,10 +394,13 @@ const Score = () => {
           <div className="p-4 w-full border border-gray-300 rounded-lg my-4 bg-white shadow-sm">
             <div className="flex flex-col lg:flex-row justify-between items-center mb-4">
               <div className="w-full lg:w-[50%] text-center lg:text-left">
-                <p className="text-gray-800 font-medium">Ausgabe (nach Berechnung)</p>
+                <p className="text-gray-800 font-medium">
+                  Ausgabe (nach Berechnung)
+                </p>
               </div>
               <span className="text-amber-600 font-bold text-lg">
-                +{showAnimation ? animatedRentScore : 0}% über dem Wiener Mietspiegel
+                +{showAnimation ? animatedRentScore : 0}% über dem Wiener
+                Mietspiegel
               </span>
             </div>
 
@@ -291,7 +408,9 @@ const Score = () => {
               <div
                 className="h-full rounded-full transition-all duration-[3000ms] ease-out transform origin-left"
                 style={{
-                  width: showAnimation ? `${(animatedRentScore / 20) * 100}%` : "0%", // Assuming 20% is max
+                  width: showAnimation
+                    ? `${(animatedRentScore / 20) * 100}%`
+                    : "0%", // Assuming 20% is max
                   background: "linear-gradient(90deg, #f59e0b, #d97706)",
                   boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
                 }}
@@ -328,7 +447,7 @@ const Score = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Score
+export default Score;
