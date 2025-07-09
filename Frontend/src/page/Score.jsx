@@ -248,90 +248,13 @@ const Score = () => {
           </div>
         </div>
 
-        {/* Contract Summary {isResponse.contract_summary_german} */}
+        {/* Contract Summary  */}
         <div className="w-[90%] lg:w-[70%] mx-auto mt-8">
           <h1 className="text-2xl my-3 font-semibold text-gray-800">
             Zusammenfassung der Analyse
           </h1>
-          <h2 className="text-2xl my-3 font-[600] text-gray-800">
-            Vertragsubersicht
-          </h2>
 
-          <div className="w-full border border-gray-300 rounded-lg p-4 flex flex-col lg:flex-row justify-between items-center gap-4">
-            <div className="w-full lg:w-[45%] border-r border-gray-300 p-2 flex justify-start items-center gap-5">
-              <div className="w-[60px] h-[60px] rounded-full bg-amber-300 overflow-hidden flex justify-center items-end">
-                <img
-                  src="/assets/images/Admin/male-user.png"
-                  className="h-[50px] w-[50px] object-contain"
-                  alt=""
-                />
-              </div>
-              <div>
-                <h3 className="text-xl text-gray-800">Herr Johannes Leitner</h3>
-                <p className="text-[12px] text-gray-500">
-                  Vortrag am 15, Jull 2025
-                </p>
-              </div>
-            </div>
-
-            <div className="w-full lg:w-[45%] flex justify-start p-2 items-center gap-5">
-              <div className="w-[60px] h-[60px] rounded-full bg-amber-300 overflow-hidden flex justify-center items-end">
-                <img
-                  src="/assets/images/Admin/female-user.png"
-                  className="h-[50px] w-[50px] object-contain"
-                  alt=""
-                />
-              </div>
-              <div>
-                <h3 className="text-xl text-gray-800">Frau Anna Berger</h3>
-                <p className="text-[12px] text-gray-500">
-                  Angefr : 15, Jul 2025
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <h2 className="text-2xl my-3 font-[600] text-gray-800">
-            Wohnobjekt
-          </h2>
-
-          <div className="w-full border border-gray-300 rounded-lg p-2 flex flex-col justify-between items-center gap-4">
-          <div className="w-full p-2 flex justify-start items-center gap-5 border-b-2 border-gray-300">
-              <div className="w-[60px] h-[60px] flex justify-center items-center">
-              <IoLocationOutline className="text-5xl text-gray-500" />
-              </div>
-              <div className="">
-                <h3 className="text-xl text-gray-800">HauptstraBe 25, 2. Stock, Tur 5, 1010 Wien</h3>
-              </div>
-            </div>
-
-            <div className="w-full p-2 flex justify-between items-center gap-5">
-
-            <div className="w-full lg:w-[50%] border-r border-gray-300 p-2 flex justify-start items-center gap-5">
-              <div className="w-[60px] h-[60px] flex justify-center items-center">
-                <FaHouseUser className="text-5xl text-gray-500" />
-              </div>
-              <div>
-                <p className="text-xl font-[500] text-gray-500">
-                  30 m<sup>2</sup>
-                </p>
-              </div>
-            </div>
-
-            <div className="w-full lg:w-[50%] border-r border-gray-300 p-2 flex justify-start items-center gap-5">
-              <div className="w-[60px] h-[60px] flex justify-center items-center">
-                <FaHouseUser className="text-5xl text-gray-500" />
-              </div>
-              <div>
-                <p className="text-xl font-[500] text-gray-500">
-                  30 m<sup>2</sup>
-                </p>
-              </div>
-            </div>
-            
-            </div>
-          </div>
-
+          <p className="text-[18px] text-gray-500">{isResponse.contract_summary_german}</p>
         </div>
 
         {/* Clause Evaluation */}
