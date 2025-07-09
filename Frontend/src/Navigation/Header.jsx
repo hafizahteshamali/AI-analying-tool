@@ -17,8 +17,9 @@ import {
 
 const Header = () => {
   const [isModal, setIsModal] = useState(false);
-  const [isLoginModalShow, setIsLoginModalShow] = useState(false);
+  
   const [isSignupModalShow, setIsSignupModalShow] = useState(false);
+  const [isLoginModalShow, setIsLoginModalShow] = useState(false);
   const [isForgotPassModalShow, setIsForgotPassModalShow] = useState(false);
   const [isResetPassModalShow, setIsResetPassModalShow] = useState(false);
   const [isOptModalShow, setIsOptModalShow] = useState(false);
@@ -44,6 +45,15 @@ const Header = () => {
   const loginOpenModalClose = () => {
     setIsModal(false);
     setIsLoginModalShow(true);
+  };
+
+  const handleProtectedNavigation = () => {
+    const token = sessionStorage.getItem("loginToken");
+    if (token) {
+      navigate("/score");
+    } else {
+      setIsLoginModalShow(true);
+    }
   };
 
   const SignupOpenModalClose = () => {
@@ -76,17 +86,17 @@ const Header = () => {
   const onSignupSubmit = async (signupData) => {
     if (isLoading) return;
     setIsLoading(true);
-  
+
     try {
       const response = await postRequest("/api/auth/signup", signupData);
       console.log(response);
-  
+
       if (response?.status === 201) {
         toast.success(response?.data?.message);
         sessionStorage.setItem("email", response?.data?.email);
         setOtpPurpose("signup");
         signupForm?.reset();
-  
+
         setTimeout(() => {
           setIsSignupModalShow(false);
           setIsOptModalShow(true);
@@ -101,32 +111,33 @@ const Header = () => {
     } finally {
       setIsLoading(false);
     }
-  };  
+  };
 
   const onLoginSubmit = async (loginData) => {
     if (isLoading) return;
     setIsLoading(true);
-  
+
     try {
       const response = await postRequest("/api/auth/login", loginData);
       console.log(response);
-  
+
       if (response?.status === 200) {
         toast.success(response?.data.message);
         sessionStorage.setItem("loginToken", response?.data.token);
         sessionStorage.setItem("userInfo", JSON.stringify(response?.data?.user));
         loginForm?.reset();
-  
+
         const token = sessionStorage.getItem("loginToken");
         const userInformation = JSON.parse(sessionStorage.getItem("userInfo"));
-  
+
         if (token && userInformation) {
           setLoginUserName(userInformation.fname);
           setIsUserLogin(true);
         }
-  
+
         setTimeout(() => {
           setIsLoginModalShow(false);
+          navigate("/score")
         }, 2000);
       } else {
         toast.error(response?.data?.message);
@@ -138,7 +149,7 @@ const Header = () => {
     } finally {
       setIsLoading(false);
     }
-  };  
+  };
 
   const onForgotSubmit = async (forgotData) => {
     if (isLoading) return;
@@ -349,15 +360,15 @@ const Header = () => {
   }, []);
 
   // Show premium modal on home page
-  useEffect(() => {
-    if (pathname === "/") {
-      const timer = setTimeout(() => {
-        setIsPremiumModal(true);
-      }, 1500);
+  // useEffect(() => {
+  //   if (pathname === "/") {
+  //     const timer = setTimeout(() => {
+  //       setIsPremiumModal(true);
+  //     }, 1500);
 
-      return () => clearTimeout(timer);
-    }
-  }, [pathname]);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [pathname]);
 
   // Close mobile menu when clicking outside
   useEffect(() => {
@@ -394,16 +405,21 @@ const Header = () => {
 
           <ul className="hidden lg:flex justify-center items-center gap-5">
             {NavigationData.map((nav, index) => {
+              const isActive = pathname === nav.url;
+              const commonClass = `text-[var(--secondary-color)] font-[500] hover:text-[var(--green-color)] transition-colors ${isActive ? "text-[var(--green-color)]" : ""
+                }`;
+
               return (
                 <li key={index}>
-                  <NavLink
-                    className={`text-[var(--secondary-color)] font-[500] hover:text-[var(--green-color)] transition-colors ${
-                      pathname === nav.url ? "text-[var(--green-color)]" : ""
-                    }`}
-                    to={nav.url}
-                  >
-                    {nav.text}
-                  </NavLink>
+                  {nav.url === "/score" ? (
+                    <button onClick={handleProtectedNavigation} className={commonClass}>
+                      {nav.text}
+                    </button>
+                  ) : (
+                    <NavLink to={nav.url} className={commonClass}>
+                      {nav.text}
+                    </NavLink>
+                  )}
                 </li>
               );
             })}
@@ -498,9 +514,8 @@ const Header = () => {
 
       {/* Mobile Menu */}
       <div
-        className={`mobile-menu h-[100vh] w-[100%] sm:w-[70%] md:w-[50%] p-3 bg-[var(--primary-color)] flex flex-col justify-center items-center gap-6 fixed z-40 top-0 right-0 bottom-0 transform transition-all duration-500 ${
-          isModal ? "translate-x-[0%]" : "translate-x-[100%]"
-        }`}
+        className={`mobile-menu h-[100vh] w-[100%] sm:w-[70%] md:w-[50%] p-3 bg-[var(--primary-color)] flex flex-col justify-center items-center gap-6 fixed z-40 top-0 right-0 bottom-0 transform transition-all duration-500 ${isModal ? "translate-x-[0%]" : "translate-x-[100%]"
+          }`}
       >
         <button
           onClick={() => setIsModal(false)}
@@ -511,18 +526,22 @@ const Header = () => {
         </button>
 
         <ul className="flex flex-col justify-center mx-0 items-start gap-5">
-          {NavigationData.map((item, index) => {
+          {NavigationData.map((nav, index) => {
+            const isActive = pathname === nav.url;
+            const commonClass = `text-[var(--secondary-color)] font-[500] hover:text-[var(--green-color)] transition-colors ${isActive ? "text-[var(--green-color)]" : ""
+              }`;
+
             return (
               <li key={index}>
-                <NavLink
-                  className={`text-[var(--secondary-color)] text-xl font-[500] hover:text-[var(--green-color)] transition-colors ${
-                    pathname === item.url ? "text-[var(--green-color)]" : ""
-                  }`}
-                  to={item.url}
-                  onClick={() => setIsModal(false)}
-                >
-                  {item.text}
-                </NavLink>
+                {nav.url === "/score" ? (
+                  <button onClick={handleProtectedNavigation} className={commonClass}>
+                    {nav.text}
+                  </button>
+                ) : (
+                  <NavLink to={nav.url} className={commonClass}>
+                    {nav.text}
+                  </NavLink>
+                )}
               </li>
             );
           })}
