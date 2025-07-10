@@ -1,10 +1,20 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaFile, FaFileUpload, FaHouseUser } from "react-icons/fa";
+import {
+  FaFile,
+  FaFileUpload,
+  FaPaw,
+  FaUserCircle,
+} from "react-icons/fa";
 import Button from "../components/Button";
 import Header from "../Navigation/Header";
 import { AipostReq } from "../api/AiAnalyticsAxios";
-import { IoLocationOutline } from "react-icons/io5";
+import { IoCalendarNumberOutline, IoLocationOutline, IoSettingsOutline } from "react-icons/io5";
+import { RiExchangeDollarLine } from "react-icons/ri";
+import { PiBedBold } from "react-icons/pi";
+import { MdEuro } from "react-icons/md";
+import { SlArrowRightCircle } from "react-icons/sl";
+import { FiFileText } from "react-icons/fi";
 
 const Score = () => {
   const [file, setFile] = useState(null);
@@ -125,12 +135,12 @@ const Score = () => {
         </div>
       </div>
 
-      <div className="container mx-auto">
+      <div className="container mx-auto p-5">
         <form
-          className="mt-10 rounded-md w-[90%] lg:w-[70%] mx-auto"
+          className="mt-10 rounded-md w-[100%] lg:w-[90%] mx-auto"
           onSubmit={handleUpload}
         >
-          <div className="border-2 border-dashed border-gray-400 p-6 rounded-lg text-center flex flex-col justify-center items-center">
+          <div className="border-2 border-dashed border-gray-400 min-h-[300px] p-6 rounded-lg text-center flex flex-col justify-center items-center">
             <p className="mb-4 font-semibold text-gray-800">
               PDF, DOCX, TXT – max. 5 MB
             </p>
@@ -216,9 +226,224 @@ const Score = () => {
           </div>
         </form>
 
+        {/* <p className="text-[18px] text-gray-500">{isResponse.contract_summary_german}</p> */}
+        {/* Contract Summary  */}
+        <div className="w-[100%] lg:w-[90%] mx-auto mt-8">
+          <h1 className="text-2xl lg:text-4xl my-3 font-semibold text-[var(--black-color)]">
+            Zusammenfassung der Analyse
+          </h1>
+
+          <div className="my-5">
+            <h1 className="text-2xl font-[500] text-[var(--black-color)]">
+              Vertragsübersicht
+            </h1>
+            <div className="flex flex-col lg:flex-row justify-start items-center lg:gap-5">
+              <div className="w-[100%] lg:w-[40%] flex rounded-md my-5 justify-start items-center gap-4 p-2 border border-gray-300">
+                <div className="h-full flex justify-center items-center">
+                  <FaUserCircle className="text-4xl text-[var(--black-color)]" />
+                </div>
+                <div>
+                  <h1 className="text-[20px] font-[500]">
+                    Herr Johannes Leitner
+                  </h1>
+                  <p className="text-[16px] font-[500] text-[#434343]">
+                    Vortrag am 15. July 2025
+                  </p>
+                </div>
+              </div>
+
+              <div className="w-[100%] lg:w-[30%] flex rounded-md my-5 justify-start items-center gap-4 p-2 border border-gray-300">
+                <div className="h-full flex justify-center items-center">
+                  <RiExchangeDollarLine className="text-4xl text-[var(--black-color)]" />
+                </div>
+                <div>
+                  <h1 className="text-[20px] font-[500]">Abonnement</h1>
+                  <p className="text-[16px] font-[500] text-[#434343]">
+                    Prämie
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col lg:flex-row justify-between items-center">
+            <div className="w-[100%] lg:w-[49%]">
+              <h2 className="text-2xl font-[500] text-[var(--black-color)] my-4">
+                Wohnobjekt
+              </h2>
+              <div className="border border-gray-300 rounded-lg p-3 flex flex-col gap-5">
+                <div className="w-[100%] flex justify-start gap-3 items-center pb-4 border-b-2 border-gray-300">
+                  <div className="">
+                    <IoLocationOutline className="text-4xl text-[var(--black-color)]" />
+                  </div>
+                  <div className="">
+                    <p className="font-[500]">
+                      Hauptstraße 25, 2. Stock, Tür 5, 1010 Wien
+                    </p>
+                  </div>
+                </div>
+
+                <div className="w-[100%] pb-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-5 lg:gap-0">
+                  <div className="flex justify-start gap-3 items-center">
+                    <div className="">
+                      <PiBedBold className="text-4xl text-[var(--black-color)]" />
+                    </div>
+                    <div className="">
+                      <p className="font-[500]">
+                        2 Zimmer, Küche, Bad, WC, Vorraum, Balkon
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end items-center gap-2">
+                    <img src="/assets/images/Admin/house.png" className="h-[30px] w-[30px] object-contain" alt="" />
+                    <p className="font-[500]">
+                      60{" "}
+                      <span>
+                        m<sup>2</sup>
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-[100%] lg:w-[49%]">
+              <h2 className="text-2xl font-[500] text-[var(--black-color)] my-4">
+                Mietzeit & Kosten
+              </h2>
+              <div className="border border-gray-300 rounded-lg p-3 flex flex-col gap-5">
+                <div className="w-[100%] flex justify-start gap-3 items-center pb-4 border-b-2 border-gray-300">
+                  <div className="w-full flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <div className="">
+                        <IoCalendarNumberOutline className="text-4xl text-[var(--black-color)]" />
+                      </div>
+                      <div className="">
+                        <p className="font-[500]">01.08.2025</p>
+                      </div>
+                    </div>
+                  </div>
+                  <span className="bg-[#EFEFEF] rounded-full w-[200px] flex justify-center items-center py-1 font-[500]">
+                    Unbefristet
+                  </span>
+                </div>
+
+                <div className="w-[100%] pb-4 flex justify-between items-center">
+                  <div className="flex justify-start gap-3 items-center">
+                    <div className="">
+                      <MdEuro className="text-4xl text-[var(--black-color)]" />
+                    </div>
+                    <div className="">
+                      <p className="font-[500]">EUR 700 inkl. BK</p>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end items-center gap-4">
+                    <img
+                      src="/assets/images/Admin/cash.png"
+                      className="h-[40px] w-[40px] object-contain"
+                      alt=""
+                    />
+                    <p className="font-[500]">EUR 2.100</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:h-[600px] w-full bg-[var(--green-color)] my-[50px] rounded-4xl flex justify-center items-center">
+            <div className="lg:h-[430px] w-[95%] flex flex-col gap-7 lg:gap-0 p-5 lg:p-0 lg:flex-row justify-between items-center">
+              
+              <div className="h-[100%] w-[100%] lg:w-[32%] lg:border-r lg:border-[#288C81] flex flex-col justify-start items-start gap-5">
+                <h1 className="text-2xl text-[var(--white-color)]">
+                  Regelungen
+                </h1>
+                <div className="min-h-[180px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center">
+                  <div className="w-[90%] flex justify-center items-center gap-5">
+                    <FaPaw className="text-6xl text-[var(--white-color)]" />
+                    <div>
+                      <h2 className="text-xl text-[var(--white-color)]">
+                        Kieintiere erlaıbü
+                      </h2>
+                      <p className="mt-3 text-[var(--white-color)] font-[200]">
+                        Hunde/Katzen nur mit Zustimmung
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="min-h-[180px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center">
+                  <div className="w-[90%] flex justify-center items-center gap-5">
+                    <img src="/assets/images/Admin/house2.svg" alt="" />
+                    <div>
+                      <h2 className="text-xl text-[var(--white-color)]">
+                        Nur zu Wohnzwecken
+                      </h2>
+                      <p className="mt-3 text-[var(--white-color)] font-[200]">
+                        Ruhezeiten:
+                      </p>
+                      <p className="text-[var(--white-color)] font-[200]">
+                        22:00-06:00 Uhr
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="h-[100%] w-[100%] lg:w-[32%] lg:border-r lg:border-[#288C81] flex flex-col justify-start items-start gap-5">
+                <h1 className="text-2xl text-[var(--white-color)]">
+                Rücktabe & Schriftform
+                </h1>
+                <div className="min-h-[180px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center">
+                  <div className="w-[90%] flex justify-center items-center gap-5">
+                    <SlArrowRightCircle className="text-6xl text-[var(--white-color)]" />
+                    <div>
+                      <p className="text-[var(--white-color)] font-[200]">
+                      Bei Beendigung in vertragsgemaßem Zustand
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="min-h-[180px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center">
+                  <div className="w-[90%] flex justify-center items-center gap-5">
+                    <FiFileText className="text-6xl text-[var(--white-color)]" />
+                    <div>
+                      <p className="text-[var(--white-color)] font-[200]">
+                      Alle Änderungen des Vertrages in Schriftform
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="h-[100%] w-[100%] lg:w-[32%] flex flex-col justify-start items-start gap-5">
+                <h1 className="text-2xl text-[var(--white-color)]">
+                Pflichten
+                </h1>
+                <div className="min-h-[180px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center">
+                <div className="w-[90%] flex justify-center items-center gap-5">
+                    <IoSettingsOutline className="text-6xl text-[var(--white-color)]" />
+                    <div>
+                      <h2 className="text-xl text-[var(--white-color)]">
+                      instandhaitung und Reparaturen
+                      </h2>
+                      <p className="mt-3 text-[var(--white-color)] font-[200]">
+                      bis EUR 100 der Mieter
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
         {/* Risk Score Section */}
-        <div className="w-[90%] lg:w-[70%] mx-auto mt-8">
-          <h1 className="text-2xl font-semibold text-gray-800">
+        <div className="w-[100%] lg:w-[90%] mx-auto mt-8">
+          <h1 className="text-2xl lg:text-4xl font-semibold text-gray-800">
             Ergebnisse der Analyse
           </h1>
 
@@ -248,17 +473,8 @@ const Score = () => {
           </div>
         </div>
 
-        {/* Contract Summary  */}
-        <div className="w-[90%] lg:w-[70%] mx-auto mt-8">
-          <h1 className="text-2xl my-3 font-semibold text-gray-800">
-            Zusammenfassung der Analyse
-          </h1>
-
-          <p className="text-[18px] text-gray-500">{isResponse.contract_summary_german}</p>
-        </div>
-
         {/* Clause Evaluation */}
-        <div className="w-[90%] lg:w-[70%] mx-auto mt-8">
+        <div className="w-[100%] lg:w-[90%] mx-auto mt-8">
           <h1 className="text-2xl font-semibold text-gray-800">
             Klauselbewertung
           </h1>
@@ -310,7 +526,7 @@ const Score = () => {
         </div>
 
         {/* Rent Comparison */}
-        <div className="w-[90%] lg:w-[70%] mx-auto mt-8">
+        <div className="w-[100%] lg:w-[90%] mx-auto mt-8">
           <h1 className="text-2xl font-semibold text-gray-800">Eingabefeld:</h1>
           <p className="text-gray-600 mb-4">Tatsächliche Monatsmiete $275</p>
 
@@ -345,19 +561,19 @@ const Score = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="w-[90%] my-10 lg:w-[90%] mx-auto flex flex-col lg:flex-row justify-center gap-10 items-center">
+        <div className="w-[90%] lg:w-[90%] my-10 mx-auto flex flex-col lg:flex-row justify-center gap-10 items-center">
           <Button
-            className="h-[50px] w-[80%] md:w-[40%] lg:w-[20%] bg-[#186DEE] text-white border-none rounded-md outline-none hover:bg-[#1557c7] transition-colors duration-300 transform hover:scale-105"
+            className="h-[50px] w-[80%] md:w-[40%] lg:w-[30%] bg-[#186DEE] text-white border-none rounded-md outline-none hover:bg-[#1557c7] transition-colors duration-300 transform hover:scale-105"
             text="PDF-Bericht herunterladen"
             onclick=""
           />
           <Button
-            className="h-[50px] w-[80%] md:w-[40%] lg:w-[20%] border-2 border-[#186DEE] text-[#186DEE] rounded-md hover:bg-[#186DEE] hover:text-white transition-all duration-300 transform hover:scale-105"
+            className="h-[50px] w-[80%] md:w-[40%] lg:w-[30%] border-2 border-[#186DEE] text-[#186DEE] rounded-md hover:bg-[#186DEE] hover:text-white transition-all duration-300 transform hover:scale-105"
             text="Neue Analyse starten"
             onclick=""
           />
           <Button
-            className="h-[50px] w-[80%] md:w-[40%] lg:w-[25%] text-[var(--white-color)] rounded-md bg-[var(--green-color)] hover:text-white transition-all duration-300 transform hover:scale-105"
+            className="h-[50px] w-[80%] md:w-[40%] lg:w-[30%] text-[var(--white-color)] rounded-md bg-[var(--green-color)] hover:text-white transition-all duration-300 transform hover:scale-105"
             text="Jetzt Rechtsbeistand kontaktieren"
             onclick=""
           />
