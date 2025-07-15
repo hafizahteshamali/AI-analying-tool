@@ -238,81 +238,74 @@ const Score = () => {
               Vertragsübersicht
             </h1>
             <div className="flex flex-col lg:flex-row justify-start items-center lg:gap-5">
-              <div className="w-[100%] lg:w-[40%] flex rounded-md my-5 justify-start items-center gap-4 p-2 border border-gray-300">
+              <div className="w-[100%] lg:w-[30%] flex rounded-md my-5 justify-start items-center gap-4 p-2 border border-gray-300">
                 <div className="h-full flex justify-center items-center">
                   <FaUserCircle className="text-4xl text-[var(--black-color)]" />
                 </div>
                 <div>
                   <h1 className="text-[20px] font-[500]">
-                    Herr Johannes Leitner
+                  {isResponse?.structured_summary_json?.parties?.landlord}
                   </h1>
-                  <p className="text-[16px] font-[500] text-[#434343]">
-                    Vortrag am 15. July 2025
-                  </p>
                 </div>
               </div>
 
               <div className="w-[100%] lg:w-[30%] flex rounded-md my-5 justify-start items-center gap-4 p-2 border border-gray-300">
                 <div className="h-full flex justify-center items-center">
-                  <RiExchangeDollarLine className="text-4xl text-[var(--black-color)]" />
+                  <FaUserCircle className="text-4xl text-[var(--black-color)]" />
                 </div>
                 <div>
-                  <h1 className="text-[20px] font-[500]">Abonnement</h1>
-                  <p className="text-[16px] font-[500] text-[#434343]">
-                    Prämie
-                  </p>
+                  <h1 className="text-[20px] font-[500]">
+                  {isResponse?.structured_summary_json?.parties?.tenant}
+                  </h1>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col lg:flex-row justify-between items-center">
-            <div className="w-[100%] lg:w-[49%]">
+          <div className="flex flex-col justify-between items-start mb-5">
+            <div className="w-[100%] lg:w-[62%]">
               <h2 className="text-2xl font-[500] text-[var(--black-color)] my-4">
                 Wohnobjekt
               </h2>
-              <div className="border border-gray-300 rounded-lg p-3 flex flex-col gap-5">
+              <div className="border border-gray-300 rounded-lg py-5 px-10 flex flex-col gap-5">
                 <div className="w-[100%] flex justify-start gap-3 items-center pb-4 border-b-2 border-gray-300">
                   <div className="">
                     <IoLocationOutline className="text-4xl text-[var(--black-color)]" />
                   </div>
                   <div className="">
                     <p className="font-[500]">
-                      Hauptstraße 25, 2. Stock, Tür 5, 1010 Wien
+                      {isResponse?.structured_summary_json?.residential_property?.address}
                     </p>
                   </div>
                 </div>
 
-                <div className="w-[100%] pb-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-5 lg:gap-0">
+                <div className="w-[100%] flex flex-col lg:flex-row justify-between items-start lg:items-center gap-5 lg:gap-0">
                   <div className="flex justify-start gap-3 items-center">
                     <div className="">
                       <PiBedBold className="text-4xl text-[var(--black-color)]" />
                     </div>
                     <div className="">
                       <p className="font-[500]">
-                        2 Zimmer, Küche, Bad, WC, Vorraum, Balkon
+                      {isResponse?.structured_summary_json?.residential_property?.rooms}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex justify-end items-center gap-2">
-                    <img src="/assets/images/Admin/house.png" className="h-[30px] w-[30px] object-contain" alt="" />
+                  <div className="flex justify-center items-center gap-2 bg-[var(--green-color)] rounded-md py-1 w-[20%] text-[var(--white-color)]">
+                    <img src="/assets/images/Admin/white-house.png" className="h-[30px] w-[30px] object-contain" alt="" />
                     <p className="font-[500]">
-                      60{" "}
-                      <span>
-                        m<sup>2</sup>
-                      </span>
+                    {isResponse?.structured_summary_json?.residential_property?.size}
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="w-[100%] lg:w-[49%]">
+            <div className="w-[100%] lg:w-[62%] mt-5">
               <h2 className="text-2xl font-[500] text-[var(--black-color)] my-4">
                 Mietzeit & Kosten
               </h2>
-              <div className="border border-gray-300 rounded-lg p-3 flex flex-col gap-5">
+              <div className="border border-gray-300 rounded-lg py-5 px-10 flex flex-col gap-5">
                 <div className="w-[100%] flex justify-start gap-3 items-center pb-4 border-b-2 border-gray-300">
                   <div className="w-full flex justify-between items-center">
                     <div className="flex items-center gap-2">
@@ -320,32 +313,32 @@ const Score = () => {
                         <IoCalendarNumberOutline className="text-4xl text-[var(--black-color)]" />
                       </div>
                       <div className="">
-                        <p className="font-[500]">01.08.2025</p>
+                        <p className="font-[500]">{isResponse?.structured_summary_json?.rental_period_costs?.start_date}</p>
                       </div>
                     </div>
                   </div>
                   <span className="bg-[#EFEFEF] rounded-full w-[200px] flex justify-center items-center py-1 font-[500]">
-                    Unbefristet
+                  {isResponse?.structured_summary_json?.rental_period_costs?.duration}
                   </span>
                 </div>
 
-                <div className="w-[100%] pb-4 flex justify-between items-center">
+                <div className="w-[100%] flex justify-between items-center">
                   <div className="flex justify-start gap-3 items-center">
                     <div className="">
                       <MdEuro className="text-4xl text-[var(--black-color)]" />
                     </div>
                     <div className="">
-                      <p className="font-[500]">EUR 700 inkl. BK</p>
+                      <p className="font-[500]">{isResponse?.structured_summary_json?.rental_period_costs?.rent}</p>
                     </div>
                   </div>
 
-                  <div className="flex justify-end items-center gap-4">
+                  <div className="flex justify-center items-center gap-4 bg-[var(--green-color)] py-1 rounded-md w-[30%] text-[var(--white-color)]">
                     <img
                       src="/assets/images/Admin/cash.png"
                       className="h-[40px] w-[40px] object-contain"
                       alt=""
                     />
-                    <p className="font-[500]">EUR 2.100</p>
+                    <p className="font-[500]">{isResponse?.structured_summary_json?.rental_period_costs?.deposit}</p>
                   </div>
                 </div>
               </div>
