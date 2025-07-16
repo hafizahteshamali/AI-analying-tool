@@ -17,7 +17,7 @@ const Subscribers = () => {
             <ul className="w-full lg:w-[90%]  flex flex-col items-start lg:gap-7">
               {PremiumOptionRoutesData.map((prem_op, index)=>{
                 return(
-                  <div className="flex justify-start items-center gap-5 lg:min-h-[100px] w-full border border-gray-500 rounded-lg p-5">
+                  <div key={index} className="flex justify-start items-center gap-5 lg:min-h-[100px] w-full border border-gray-500 rounded-lg p-5">
                     <img src={prem_op.icon} className="w-[70px] object-contain" alt="" />
                       <div className="w-[70%]">
                         <h2 className="text-[16px] sm:text-2xl font-[500]">{prem_op.text}</h2>
