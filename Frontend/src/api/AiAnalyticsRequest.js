@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from "react-toastify"; // Optional if you want to show toast here directly
 
 const AiAnalyticsApi = axios.create({
-  baseURL: "https://6a05db8b05ef.ngrok-free.app",
+  baseURL: "http://37.120.176.43",
   timeout: 30000,
   headers: {
     "Content-Type": "multipart/form-data",
