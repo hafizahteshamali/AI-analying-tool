@@ -6,11 +6,12 @@ import { FaFile, FaFileUpload, FaPaw, FaUserCircle } from "react-icons/fa"
 import Button from "../components/Button"
 import Header from "../Navigation/Header"
 import { AipostReq } from "../api/AiAnalyticsAxios"
-import { IoCalendarNumberOutline, IoLocationOutline, IoSettingsOutline } from "react-icons/io5"
+import { IoArrowForwardCircleOutline, IoCalendarNumberOutline, IoLocationOutline, IoSettingsOutline } from "react-icons/io5"
 import { PiBedBold } from "react-icons/pi"
 import { MdEuro } from "react-icons/md"
 import { SlArrowRightCircle } from "react-icons/sl"
 import { FiFileText } from "react-icons/fi"
+import { GoDot } from "react-icons/go";
 
 const Score = () => {
   const [file, setFile] = useState(null)
@@ -21,12 +22,11 @@ const Score = () => {
   const [isIllegal, setIsIllegal] = useState([])
   const [isQuestionable, setIsQuestionable] = useState([])
   const [islegal, setIslegal] = useState([])
-
   // Animation states
   const [animatedRiskScore, setAnimatedRiskScore] = useState(0)
   const [animatedRentScore, setAnimatedRentScore] = useState(0)
   const [showAnimation, setShowAnimation] = useState(false)
-
+  const [isStructureResponse, setIsStructureResponse] = useState()
   const navigate = useNavigate()
 
   // Check authentication
@@ -43,10 +43,10 @@ const Score = () => {
   useEffect(() => {
     if (isResponse?.risk_score_percentage && !showAnimation) {
       setShowAnimation(true)
-
       // Parse the risk score properly
       const riskTarget = Number.parseInt(isResponse.risk_score_percentage, 10) || 0
-      const rentTarget = 14
+      // Get rent target dynamically from isResponse
+      const rentTarget = Number.parseInt(isResponse?.rent_comparison?.percent, 10) || 0
 
       // Reset scores before animation
       setAnimatedRiskScore(0)
@@ -87,7 +87,7 @@ const Score = () => {
         }
       }, 100)
     }
-  }, [isResponse, showAnimation])
+  }, [isResponse, showAnimation]) // Dependencies are correct [^1][^2]
 
   // Handle file selection
   const handleFileChange = useCallback((e) => {
@@ -98,7 +98,6 @@ const Score = () => {
         alert("Datei ist zu groß. Maximum 5MB erlaubt.")
         return
       }
-
       // Validate file type
       const allowedTypes = [".pdf", ".docx", ".txt"]
       const fileExtension = "." + selectedFile.name.split(".").pop().toLowerCase()
@@ -106,7 +105,6 @@ const Score = () => {
         alert("Ungültiger Dateityp. Nur PDF, DOCX und TXT sind erlaubt.")
         return
       }
-
       setFile(selectedFile)
       setFileName(selectedFile.name)
     }
@@ -120,26 +118,21 @@ const Score = () => {
         alert("Bitte wählen Sie eine Datei aus.")
         return
       }
-
       const formData = new FormData()
       formData.append("file", file)
-
       try {
         setUploading(true)
         const response = await AipostReq("/analyze", formData)
         console.log("✅ Upload Response:", response)
-
         // Safely access nested properties
         const clauses = response?.data?.clauses_german || {}
         setIsIllegal(clauses.illegal || [])
         setIsQuestionable(clauses.questionable || [])
         setIslegal(clauses.legal || [])
-
         // Set response data
         const responseData = response?.data || null
-
         setIsResponse(responseData)
-
+        setIsStructureResponse(responseData?.structured_summary_json)
         // Reset animation state to trigger new animation
         setShowAnimation(false)
       } catch (error) {
@@ -174,6 +167,10 @@ const Score = () => {
           landlord: "Test Landlord",
           tenant: "Test Tenant",
         },
+      },
+      rent_comparison: {
+        percent: "85",
+        text: "über dem Mietspiegel",
       },
     }
     setIsResponse(mockResponse)
@@ -214,7 +211,6 @@ const Score = () => {
           </div>
         </div>
       </div>
-
       <div className="container mx-auto p-5">
         {/* File Upload Form */}
         <form className="mt-10 rounded-md w-[100%] lg:w-[90%] mx-auto" onSubmit={handleUpload}>
@@ -264,7 +260,6 @@ const Score = () => {
               )}
             </div>
           </div>
-
           {/* File Display */}
           <div className="flex justify-between items-center gap-2 w-[100%] mt-8">
             <div className="w-[50%] flex justify-start items-center gap-2.5">
@@ -291,7 +286,6 @@ const Score = () => {
             </button>
           </div>
         </form>
-
         {/* Analysis Results */}
         {isResponse && (
           <div>
@@ -300,7 +294,6 @@ const Score = () => {
               <h1 className="text-2xl lg:text-4xl my-3 font-semibold text-[var(--black-color)]">
                 Zusammenfassung der Analyse
               </h1>
-
               {/* Contract Overview */}
               <div className="my-5">
                 <h1 className="text-2xl font-[500] text-[var(--black-color)]">Vertragsübersicht</h1>
@@ -327,7 +320,6 @@ const Score = () => {
                   )}
                 </div>
               </div>
-
               {/* Property Information */}
               <div className="flex flex-col justify-between items-start mb-5">
                 {structuredSummary?.residential_property && (
@@ -369,7 +361,6 @@ const Score = () => {
                     </div>
                   </div>
                 )}
-
                 {/* Rental Period & Costs */}
                 {structuredSummary?.rental_period_costs && (
                   <div className="w-[100%] lg:w-[57%] mt-5">
@@ -389,7 +380,7 @@ const Score = () => {
                           </div>
                         </div>
                         {structuredSummary.rental_period_costs.duration && (
-                          <span className="bg-[#EFEFEF] rounded-full flex text-center justify-center text-[12px] items-center px-2 py-1 font-[500]">
+                          <span className="bg-[#EFEFEF] rounded-full flex text-center w-[200px] justify-center text-[12px] items-center px-2 py-1 font-[500]">
                             {structuredSummary.rental_period_costs.duration}
                           </span>
                         )}
@@ -420,70 +411,58 @@ const Score = () => {
                   </div>
                 )}
               </div>
-
               {/* Regulations Section */}
-              <div className="lg:h-[600px] w-full bg-[var(--green-color)] my-[50px] rounded-4xl flex justify-center items-center">
-                <div className="lg:h-[430px] w-[95%] flex flex-col gap-7 lg:gap-0 p-5 lg:p-0 lg:flex-row justify-between items-center">
+              <div className="lg:min-h-[600px] w-full bg-[var(--green-color)] my-[50px] rounded-4xl flex justify-center items-center">
+                <div className="w-[95%] h-[100%] flex flex-col gap-7 lg:gap-0 p-5 lg:p-5 lg:flex-row justify-between items-start">
                   <div className="h-[100%] w-[100%] lg:w-[32%] lg:border-r lg:border-[#288C81] flex flex-col justify-start items-start gap-5">
                     <h1 className="text-2xl text-[var(--white-color)]">Regelungen</h1>
-                    <div className="min-h-[180px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center">
-                      <div className="w-[90%] flex justify-center items-center gap-5">
-                        <FaPaw className="text-6xl text-[var(--white-color)]" />
-                        <div>
-                          <h2 className="text-xl text-[var(--white-color)]">Kleintiere erlaubt</h2>
-                          <p className="mt-3 text-[var(--white-color)] font-[200]">Hunde/Katzen nur mit Zustimmung</p>
+                    {isStructureResponse?.regulations.map((reg, index)=>{
+                      return(
+                        <div key={index} className="min-h-[250px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center">
+                        <div className="w-[90%] flex justify-center items-center gap-2">
+                        <GoDot className="text-4xl text-[var(--white-color)]" />
+                        <div className="w-[100%] p-2">
+                            <p className="mt-3 text-[var(--white-color)] text-sm font-[200]">{reg}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="min-h-[180px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center">
-                      <div className="w-[90%] flex justify-center items-center gap-5">
-                        <img src="/assets/images/Admin/house2.svg" alt="House icon" />
-                        <div>
-                          <h2 className="text-xl text-[var(--white-color)]">Nur zu Wohnzwecken</h2>
-                          <p className="mt-3 text-[var(--white-color)] font-[200]">Ruhezeiten:</p>
-                          <p className="text-[var(--white-color)] font-[200]">22:00-06:00 Uhr</p>
-                        </div>
-                      </div>
-                    </div>
+                      )
+                    })}
                   </div>
                   <div className="h-[100%] w-[100%] lg:w-[32%] lg:border-r lg:border-[#288C81] flex flex-col justify-start items-start gap-5">
                     <h1 className="text-2xl text-[var(--white-color)]">Rückgabe & Schriftform</h1>
-                    <div className="min-h-[180px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center">
-                      <div className="w-[90%] flex justify-center items-center gap-5">
-                        <SlArrowRightCircle className="text-6xl text-[var(--white-color)]" />
-                        <div>
-                          <p className="text-[var(--white-color)] font-[200]">
-                            Bei Beendigung in vertragsgemäßem Zustand
+                    {isStructureResponse?.backspace_written_form.map((bwf, index)=>{
+                      return(
+                    <div key={index} className="min-h-[250px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center">
+                      <div className="w-[90%] flex justify-center items-center gap-2">
+                      <GoDot className="text-4xl text-[var(--white-color)]" />
+                      <div className="w-[80%]">
+                          <p className="text-[var(--white-color)] font-[200] text-sm">
+                            {bwf}
                           </p>
                         </div>
                       </div>
                     </div>
-                    <div className="min-h-[180px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center">
-                      <div className="w-[90%] flex justify-center items-center gap-5">
-                        <FiFileText className="text-6xl text-[var(--white-color)]" />
-                        <div>
-                          <p className="text-[var(--white-color)] font-[200]">
-                            Alle Änderungen des Vertrages in Schriftform
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                      )
+                    })}
                   </div>
                   <div className="h-[100%] w-[100%] lg:w-[32%] flex flex-col justify-start items-start gap-5">
                     <h1 className="text-2xl text-[var(--white-color)]">Pflichten</h1>
-                    <div className="min-h-[180px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center">
-                      <div className="w-[90%] flex justify-center items-center gap-5">
-                        <IoSettingsOutline className="text-6xl text-[var(--white-color)]" />
-                        <div>
-                          <h2 className="text-xl text-[var(--white-color)]">Instandhaltung und Reparaturen</h2>
-                          <p className="mt-3 text-[var(--white-color)] font-[200]">bis EUR 100 der Mieter</p>
+                    {isStructureResponse?.duties.map((duties, index)=>{
+                      return(
+                    <div key={index} className="min-h-[250px] w-[100%] bg-[#288C81] rounded-lg flex justify-center items-center">
+                      <div className="w-[90%] flex justify-center items-center gap-2">
+                        <GoDot className="text-4xl text-[var(--white-color)]" />
+                        <div className="w-[80%]">
+                          <p className="mt-3 text-[var(--white-color)] text-sm font-[200]">{duties}</p>
                         </div>
                       </div>
                     </div>
+                      )
+                    })}
                   </div>
                 </div>
               </div>
-
               {/* Risk Score Section */}
               <div className="w-[100%] lg:w-[90%] mx-auto mt-8">
                 <h1 className="text-2xl lg:text-4xl font-semibold text-gray-800">Ergebnisse der Analyse</h1>
@@ -505,7 +484,6 @@ const Score = () => {
                   </div>
                 </div>
               </div>
-
               {/* Clause Evaluation */}
               <div className="w-[100%] lg:w-[90%] mx-auto mt-8">
                 <h1 className="text-2xl font-semibold text-gray-800">Klauselbewertung</h1>
@@ -554,7 +532,6 @@ const Score = () => {
                   )}
                 </div>
               </div>
-
               {/* Rent Comparison */}
               <div className="w-[100%] lg:w-[90%] mx-auto mt-8">
                 <h1 className="text-2xl font-semibold text-gray-800">Eingabefeld:</h1>
@@ -565,14 +542,14 @@ const Score = () => {
                       <p className="text-gray-800 font-medium">Ausgabe (nach Berechnung)</p>
                     </div>
                     <span className="text-amber-600 font-bold text-lg">
-                      +{animatedRentScore}% über dem Wiener Mietspiegel
+                      {animatedRentScore}% {isResponse?.rent_comparison.text}
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-6 overflow-hidden shadow-inner">
                     <div
                       className="h-full rounded-full transition-all duration-[3000ms] ease-out transform origin-left"
                       style={{
-                        width: `${Math.min((animatedRentScore / 20) * 100, 100)}%`,
+                        width: `${Math.min(animatedRentScore, 100)}%`, // dynamic percent using animated state
                         background: "linear-gradient(90deg, #f59e0b, #d97706)",
                         boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
                       }}
@@ -582,7 +559,6 @@ const Score = () => {
                   </div>
                 </div>
               </div>
-
               {/* Action Buttons */}
               <div className="w-[90%] lg:w-[90%] my-10 mx-auto flex flex-col lg:flex-row justify-center gap-10 items-center">
                 <Button
@@ -605,7 +581,6 @@ const Score = () => {
                   }}
                 />
               </div>
-
               <div className="w-[90%] my-10 lg:w-[90%] mx-auto">
                 <p className="text-[18px] w-full lg:w-[50%] mx-auto text-[#CACBCB] text-center">
                   Dieses Tool ersetzt keine Rechtsberatung. Alle Angaben ohne Gewähr.
