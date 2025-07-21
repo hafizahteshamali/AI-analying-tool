@@ -420,7 +420,7 @@ const Score = () => {
                       return(
                         <div key={index} className="min-h-[250px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center">
                         <div className="w-[90%] flex justify-center items-center gap-2">
-                        <GoDot className="text-4xl text-[var(--white-color)]" />
+                        {/* <GoDot className="text-4xl text-[var(--white-color)]" /> */}
                         <div className="w-[100%] p-2">
                             <p className="mt-3 text-[var(--white-color)] text-sm font-[200]">{reg}</p>
                           </div>
@@ -435,8 +435,8 @@ const Score = () => {
                       return(
                     <div key={index} className="min-h-[250px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center">
                       <div className="w-[90%] flex justify-center items-center gap-2">
-                      <GoDot className="text-4xl text-[var(--white-color)]" />
-                      <div className="w-[80%]">
+                      {/* <GoDot className="text-4xl text-[var(--white-color)]" /> */}
+                      <div className="w-[100%]">
                           <p className="text-[var(--white-color)] font-[200] text-sm">
                             {bwf}
                           </p>
@@ -452,8 +452,7 @@ const Score = () => {
                       return(
                     <div key={index} className="min-h-[250px] w-[100%] bg-[#288C81] rounded-lg flex justify-center items-center">
                       <div className="w-[90%] flex justify-center items-center gap-2">
-                        <GoDot className="text-4xl text-[var(--white-color)]" />
-                        <div className="w-[80%]">
+                        <div className="w-[100%]">
                           <p className="mt-3 text-[var(--white-color)] text-sm font-[200]">{duties}</p>
                         </div>
                       </div>
@@ -535,7 +534,7 @@ const Score = () => {
               {/* Rent Comparison */}
               <div className="w-[100%] lg:w-[90%] mx-auto mt-8">
                 <h1 className="text-2xl font-semibold text-gray-800">Eingabefeld:</h1>
-                <p className="text-gray-600 mb-4">Tatsächliche Monatsmiete $275</p>
+                <p className="text-gray-600 mb-4">{structuredSummary.rental_period_costs.rent}</p>
                 <div className="p-4 w-full border border-gray-300 rounded-lg my-4 bg-white shadow-sm">
                   <div className="flex flex-col lg:flex-row justify-between items-center mb-4">
                     <div className="w-full lg:w-[50%] text-center lg:text-left">
