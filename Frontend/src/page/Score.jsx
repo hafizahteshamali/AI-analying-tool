@@ -90,25 +90,28 @@ const Score = () => {
   }, [isResponse, showAnimation]) // Dependencies are correct [^1][^2]
 
   // Handle file selection
-  const handleFileChange = useCallback((e) => {
-    const selectedFile = e.target.files[0]
-    if (selectedFile) {
-      // Validate file size (5MB limit)
-      if (selectedFile.size > 5 * 1024 * 1024) {
-        alert("Datei ist zu groß. Maximum 5MB erlaubt.")
-        return
-      }
-      // Validate file type
-      const allowedTypes = [".pdf", ".docx", ".txt"]
-      const fileExtension = "." + selectedFile.name.split(".").pop().toLowerCase()
-      if (!allowedTypes.includes(fileExtension)) {
-        alert("Ungültiger Dateityp. Nur PDF, DOCX und TXT sind erlaubt.")
-        return
-      }
-      setFile(selectedFile)
-      setFileName(selectedFile.name)
+  // Handle file selection
+const handleFileChange = useCallback((e) => {
+  const selectedFile = e.target.files[0]
+  if (selectedFile) {
+    // Validate file size (10MB limit)
+    if (selectedFile.size > 10 * 1024 * 1024) {
+      alert("Datei ist zu groß. Maximum 10MB erlaubt.")
+      return
     }
-  }, [])
+
+    // Validate file type
+    const allowedTypes = [".pdf", ".docx", ".doc", ".jpg", ".jpeg", ".png", ".tiff"]
+    const fileExtension = "." + selectedFile.name.split(".").pop().toLowerCase()
+    if (!allowedTypes.includes(fileExtension)) {
+      alert("Ungültiger Dateityp. Nur PDF, DOCX, DOC, JPG, JPEG, PNG und TIFF sind erlaubt.")
+      return
+    }
+
+    setFile(selectedFile)
+    setFileName(selectedFile.name)
+  }
+}, [])
 
   // Handle file upload with better debugging
   const handleUpload = useCallback(
