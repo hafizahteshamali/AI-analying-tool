@@ -1,17 +1,13 @@
 "use client"
-
 import { useState, useEffect, useCallback, useMemo } from "react"
 import { useNavigate } from "react-router-dom"
-import { FaFile, FaFileUpload, FaPaw, FaUserCircle } from "react-icons/fa"
+import { FaFile, FaFileUpload, FaUserCircle } from "react-icons/fa"
 import Button from "../components/Button"
 import Header from "../Navigation/Header"
 import { AipostReq } from "../api/AiAnalyticsAxios"
-import { IoArrowForwardCircleOutline, IoCalendarNumberOutline, IoLocationOutline, IoSettingsOutline } from "react-icons/io5"
+import { IoCalendarNumberOutline, IoLocationOutline } from "react-icons/io5"
 import { PiBedBold } from "react-icons/pi"
 import { MdEuro } from "react-icons/md"
-import { SlArrowRightCircle } from "react-icons/sl"
-import { FiFileText } from "react-icons/fi"
-import { GoDot } from "react-icons/go";
 
 const Score = () => {
   const [file, setFile] = useState(null)
@@ -39,24 +35,20 @@ const Score = () => {
     }
   }, [navigate])
 
-  // Fixed Animation effect with better debugging
+  // Animation effect
   useEffect(() => {
     if (isResponse?.risk_score_percentage && !showAnimation) {
       setShowAnimation(true)
-      // Parse the risk score properly
       const riskTarget = Number.parseInt(isResponse.risk_score_percentage, 10) || 0
-      // Get rent target dynamically from isResponse
       const rentTarget = Number.parseInt(isResponse?.rent_comparison?.percent, 10) || 0
 
-      // Reset scores before animation
       setAnimatedRiskScore(0)
       setAnimatedRentScore(0)
 
-      // Use setTimeout to ensure state updates are processed
       setTimeout(() => {
         let riskCurrent = 0
         let rentCurrent = 0
-        const duration = 2000 // 2 seconds
+        const duration = 2000
         const steps = 50
         const riskIncrement = riskTarget / steps
         const rentIncrement = rentTarget / steps
@@ -80,40 +72,60 @@ const Score = () => {
           setAnimatedRentScore(Math.round(rentCurrent))
         }, stepDuration)
 
-        // Cleanup function
         return () => {
           clearInterval(riskInterval)
           clearInterval(rentInterval)
         }
       }, 100)
     }
-  }, [isResponse, showAnimation]) // Dependencies are correct [^1][^2]
+  }, [isResponse, showAnimation])
 
-  // Handle file selection
-  // Handle file selection
-const handleFileChange = useCallback((e) => {
-  const selectedFile = e.target.files[0]
-  if (selectedFile) {
-    // Validate file size (10MB limit)
-    if (selectedFile.size > 10 * 1024 * 1024) {
-      alert("Datei ist zu groß. Maximum 10MB erlaubt.")
-      return
+  // Handle file selection with proper validation
+  const handleFileChange = useCallback((e) => {
+    const selectedFile = e.target.files[0]
+    if (selectedFile) {
+      // File size validation (10MB = 10 * 1024 * 1024 bytes)
+      const maxSizeInBytes = 10 * 1024 * 1024
+      if (selectedFile.size > maxSizeInBytes) {
+        alert("Datei ist zu groß. Maximum 10MB erlaubt.")
+        e.target.value = "" // Clear the input
+        return
+      }
+
+      // File type validation
+      const allowedExtensions = ["pdf", "docx", "doc", "jpg", "jpeg", "png", "tiff"]
+      const fileName = selectedFile.name.toLowerCase()
+      const fileExtension = fileName.split(".").pop()
+
+      if (!allowedExtensions.includes(fileExtension)) {
+        alert("Ungültiger Dateityp. Nur PDF, DOCX, DOC, JPG, JPEG, PNG und TIFF sind erlaubt.")
+        e.target.value = "" // Clear the input
+        return
+      }
+
+      // File type validation using MIME type as additional check
+      const allowedMimeTypes = [
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // docx
+        "application/msword", // doc
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/tiff",
+      ]
+
+      if (!allowedMimeTypes.includes(selectedFile.type) && selectedFile.type !== "") {
+        alert("Ungültiger Dateityp. Nur PDF, DOCX, DOC, JPG, JPEG, PNG und TIFF sind erlaubt.")
+        e.target.value = "" // Clear the input
+        return
+      }
+
+      setFile(selectedFile)
+      setFileName(selectedFile.name)
     }
+  }, [])
 
-    // Validate file type
-    const allowedTypes = [".pdf", ".docx", ".doc", ".jpg", ".jpeg", ".png", ".tiff"]
-    const fileExtension = "." + selectedFile.name.split(".").pop().toLowerCase()
-    if (!allowedTypes.includes(fileExtension)) {
-      alert("Ungültiger Dateityp. Nur PDF, DOCX, DOC, JPG, JPEG, PNG und TIFF sind erlaubt.")
-      return
-    }
-
-    setFile(selectedFile)
-    setFileName(selectedFile.name)
-  }
-}, [])
-
-  // Handle file upload with better debugging
+  // Handle file upload
   const handleUpload = useCallback(
     async (e) => {
       e.preventDefault()
@@ -121,22 +133,24 @@ const handleFileChange = useCallback((e) => {
         alert("Bitte wählen Sie eine Datei aus.")
         return
       }
+
       const formData = new FormData()
       formData.append("file", file)
+
       try {
         setUploading(true)
         const response = await AipostReq("/analyze", formData)
         console.log("✅ Upload Response:", response)
-        // Safely access nested properties
+
         const clauses = response?.data?.clauses_german || {}
         setIsIllegal(clauses.illegal || [])
         setIsQuestionable(clauses.questionable || [])
         setIslegal(clauses.legal || [])
-        // Set response data
+
         const responseData = response?.data || null
         setIsResponse(responseData)
         setIsStructureResponse(responseData?.structured_summary_json)
-        // Reset animation state to trigger new animation
+
         setShowAnimation(false)
       } catch (error) {
         console.error("❌ Upload Error:", error)
@@ -159,25 +173,11 @@ const handleFileChange = useCallback((e) => {
     setAnimatedRiskScore(0)
     setAnimatedRentScore(0)
     setShowAnimation(false)
-  }, [])
-
-  // Test button to simulate data (for debugging)
-  const handleTestAnimation = useCallback(() => {
-    const mockResponse = {
-      risk_score_percentage: "75",
-      structured_summary_json: {
-        parties: {
-          landlord: "Test Landlord",
-          tenant: "Test Tenant",
-        },
-      },
-      rent_comparison: {
-        percent: "85",
-        text: "über dem Mietspiegel",
-      },
+    // Clear file input
+    const fileInput = document.getElementById("fileInput")
+    if (fileInput) {
+      fileInput.value = ""
     }
-    setIsResponse(mockResponse)
-    setShowAnimation(false)
   }, [])
 
   // Memoized values
@@ -214,14 +214,15 @@ const handleFileChange = useCallback((e) => {
           </div>
         </div>
       </div>
+
       <div className="container mx-auto p-5">
         {/* File Upload Form */}
         <form className="mt-10 rounded-md w-[100%] lg:w-[90%] mx-auto" onSubmit={handleUpload}>
           <div className="border-2 border-dashed border-gray-400 min-h-[300px] p-6 rounded-lg text-center flex flex-col justify-center items-center">
-            <p className="mb-4 font-semibold text-gray-800">PDF, DOCX, TXT – max. 5 MB</p>
+            <p className="mb-4 font-semibold text-gray-800">PDF, DOCX, DOC, JPG, JPEG, PNG, TIFF – max. 10 MB</p>
             <input
               type="file"
-              accept=".pdf,.docx,.txt"
+              accept=".pdf,.docx,.doc,.jpg,.jpeg,.png,.tiff"
               onChange={handleFileChange}
               className="hidden"
               id="fileInput"
@@ -263,6 +264,7 @@ const handleFileChange = useCallback((e) => {
               )}
             </div>
           </div>
+
           {/* File Display */}
           <div className="flex justify-between items-center gap-2 w-[100%] mt-8">
             <div className="w-[50%] flex justify-start items-center gap-2.5">
@@ -289,6 +291,7 @@ const handleFileChange = useCallback((e) => {
             </button>
           </div>
         </form>
+
         {/* Analysis Results */}
         {isResponse && (
           <div>
@@ -297,6 +300,7 @@ const handleFileChange = useCallback((e) => {
               <h1 className="text-2xl lg:text-4xl my-3 font-semibold text-[var(--black-color)]">
                 Zusammenfassung der Analyse
               </h1>
+
               {/* Contract Overview */}
               <div className="my-5">
                 <h1 className="text-2xl font-[500] text-[var(--black-color)]">Vertragsübersicht</h1>
@@ -323,6 +327,7 @@ const handleFileChange = useCallback((e) => {
                   )}
                 </div>
               </div>
+
               {/* Property Information */}
               <div className="flex flex-col justify-between items-start mb-5">
                 {structuredSummary?.residential_property && (
@@ -364,6 +369,7 @@ const handleFileChange = useCallback((e) => {
                     </div>
                   </div>
                 )}
+
                 {/* Rental Period & Costs */}
                 {structuredSummary?.rental_period_costs && (
                   <div className="w-[100%] lg:w-[57%] mt-5">
@@ -414,57 +420,64 @@ const handleFileChange = useCallback((e) => {
                   </div>
                 )}
               </div>
+
               {/* Regulations Section */}
               <div className="lg:min-h-[600px] w-full bg-[var(--green-color)] my-[50px] rounded-4xl flex justify-center items-center">
                 <div className="w-[95%] h-[100%] flex flex-col gap-7 lg:gap-0 p-5 lg:p-5 lg:flex-row justify-between items-start">
                   <div className="h-[100%] w-[100%] lg:w-[32%] lg:border-r lg:border-[#288C81] flex flex-col justify-start items-start gap-5">
                     <h1 className="text-2xl text-[var(--white-color)]">Regelungen</h1>
-                    {isStructureResponse?.regulations.map((reg, index)=>{
-                      return(
-                        <div key={index} className="min-h-[250px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center">
-                        <div className="w-[90%] flex justify-center items-center gap-2">
-                        {/* <GoDot className="text-4xl text-[var(--white-color)]" /> */}
-                        <div className="w-[100%] p-2">
-                            <p className="mt-3 text-[var(--white-color)] text-sm font-[200]">{reg}</p>
+                    {isStructureResponse?.regulations?.map((reg, index) => {
+                      return (
+                        <div
+                          key={index}
+                          className="min-h-[250px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center"
+                        >
+                          <div className="w-[90%] flex justify-center items-center gap-2">
+                            <div className="w-[100%] p-2">
+                              <p className="mt-3 text-[var(--white-color)] text-sm font-[200]">{reg}</p>
+                            </div>
                           </div>
                         </div>
-                      </div>
                       )
                     })}
                   </div>
                   <div className="h-[100%] w-[100%] lg:w-[32%] lg:border-r lg:border-[#288C81] flex flex-col justify-start items-start gap-5">
                     <h1 className="text-2xl text-[var(--white-color)]">Rückgabe & Schriftform</h1>
-                    {isStructureResponse?.backspace_written_form.map((bwf, index)=>{
-                      return(
-                    <div key={index} className="min-h-[250px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center">
-                      <div className="w-[90%] flex justify-center items-center gap-2">
-                      {/* <GoDot className="text-4xl text-[var(--white-color)]" /> */}
-                      <div className="w-[100%]">
-                          <p className="text-[var(--white-color)] font-[200] text-sm">
-                            {bwf}
-                          </p>
+                    {isStructureResponse?.backspace_written_form?.map((bwf, index) => {
+                      return (
+                        <div
+                          key={index}
+                          className="min-h-[250px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center"
+                        >
+                          <div className="w-[90%] flex justify-center items-center gap-2">
+                            <div className="w-[100%]">
+                              <p className="text-[var(--white-color)] font-[200] text-sm">{bwf}</p>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
                       )
                     })}
                   </div>
                   <div className="h-[100%] w-[100%] lg:w-[32%] flex flex-col justify-start items-start gap-5">
                     <h1 className="text-2xl text-[var(--white-color)]">Pflichten</h1>
-                    {isStructureResponse?.duties.map((duties, index)=>{
-                      return(
-                    <div key={index} className="min-h-[250px] w-[100%] bg-[#288C81] rounded-lg flex justify-center items-center">
-                      <div className="w-[90%] flex justify-center items-center gap-2">
-                        <div className="w-[100%]">
-                          <p className="mt-3 text-[var(--white-color)] text-sm font-[200]">{duties}</p>
+                    {isStructureResponse?.duties?.map((duties, index) => {
+                      return (
+                        <div
+                          key={index}
+                          className="min-h-[250px] w-[100%] bg-[#288C81] rounded-lg flex justify-center items-center"
+                        >
+                          <div className="w-[90%] flex justify-center items-center gap-2">
+                            <div className="w-[100%]">
+                              <p className="mt-3 text-[var(--white-color)] text-sm font-[200]">{duties}</p>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
                       )
                     })}
                   </div>
                 </div>
               </div>
+
               {/* Risk Score Section */}
               <div className="w-[100%] lg:w-[90%] mx-auto mt-8">
                 <h1 className="text-2xl lg:text-4xl font-semibold text-gray-800">Ergebnisse der Analyse</h1>
@@ -486,6 +499,7 @@ const handleFileChange = useCallback((e) => {
                   </div>
                 </div>
               </div>
+
               {/* Clause Evaluation */}
               <div className="w-[100%] lg:w-[90%] mx-auto mt-8">
                 <h1 className="text-2xl font-semibold text-gray-800">Klauselbewertung</h1>
@@ -534,24 +548,25 @@ const handleFileChange = useCallback((e) => {
                   )}
                 </div>
               </div>
+
               {/* Rent Comparison */}
               <div className="w-[100%] lg:w-[90%] mx-auto mt-8">
                 <h1 className="text-2xl font-semibold text-gray-800">Eingabefeld:</h1>
-                <p className="text-gray-600 mb-4">{structuredSummary.rental_period_costs.rent}</p>
+                <p className="text-gray-600 mb-4">{structuredSummary?.rental_period_costs?.rent}</p>
                 <div className="p-4 w-full border border-gray-300 rounded-lg my-4 bg-white shadow-sm">
                   <div className="flex flex-col lg:flex-row justify-between items-center mb-4">
                     <div className="w-full lg:w-[50%] text-center lg:text-left">
                       <p className="text-gray-800 font-medium">Ausgabe (nach Berechnung)</p>
                     </div>
                     <span className="text-amber-600 font-bold text-lg">
-                      {animatedRentScore}% {isResponse?.rent_comparison.text}
+                      {animatedRentScore}% {isResponse?.rent_comparison?.text}
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-6 overflow-hidden shadow-inner">
                     <div
                       className="h-full rounded-full transition-all duration-[3000ms] ease-out transform origin-left"
                       style={{
-                        width: `${Math.min(animatedRentScore, 100)}%`, // dynamic percent using animated state
+                        width: `${Math.min(animatedRentScore, 100)}%`,
                         background: "linear-gradient(90deg, #f59e0b, #d97706)",
                         boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
                       }}
@@ -561,6 +576,7 @@ const handleFileChange = useCallback((e) => {
                   </div>
                 </div>
               </div>
+
               {/* Action Buttons */}
               <div className="w-[90%] lg:w-[90%] my-10 mx-auto flex flex-col lg:flex-row justify-center gap-10 items-center">
                 <Button
@@ -583,6 +599,7 @@ const handleFileChange = useCallback((e) => {
                   }}
                 />
               </div>
+
               <div className="w-[90%] my-10 lg:w-[90%] mx-auto">
                 <p className="text-[18px] w-full lg:w-[50%] mx-auto text-[#CACBCB] text-center">
                   Dieses Tool ersetzt keine Rechtsberatung. Alle Angaben ohne Gewähr.
