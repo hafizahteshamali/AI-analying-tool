@@ -3,7 +3,7 @@ import { toast } from "react-toastify"; // Optional if you want to show toast he
 
 const AiAnalyticsApi = axios.create({
   baseURL: "https://contractanalyzer.duckdns.org",
-  timeout: 30000,
+  timeout: 180000, // 3 minutes in milliseconds
   headers: {
     "Content-Type": "multipart/form-data",
   },
