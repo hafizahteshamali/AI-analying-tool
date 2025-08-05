@@ -577,6 +577,107 @@ const Score = () => {
                 </div>
               </div>
 
+              {/* Indexation Clause Analysis */}
+              <div className="w-[90%] mx-auto mt-8">
+                <h1 className="text-gray-800 my-10 text-4xl font-bold">Analyse der Indexierungsklausel</h1>
+                <div className="flex flex-wrap justify-between items-center gap-5">
+                  <div className="flex w-[45%] justify-start items-center gap-2.5 border border-gray-300 rounded-lg p-2">
+                    <h3 className="text-2xl font-semibold text-gray-800">Indexname:</h3>
+                    <p>{isResponse?.indexation_clause_analysis?.index_name}</p>
+                  </div>
+                  <div className="flex w-[45%] justify-start items-center gap-2.5 border border-gray-300 rounded-lg p-2">
+                    <h3 className="text-2xl font-semibold text-gray-800">Schwellenprozentsatz:</h3>
+                    <p>{isResponse?.indexation_clause_analysis?.threshold_percent}</p>
+                  </div>
+                  <div className="flex w-[45%] justify-start items-center gap-2.5 border border-gray-300 rounded-lg p-2">
+                    <h3 className="text-2xl font-semibold text-gray-800">symmetrische Einstellung:</h3>
+                    <p>{isResponse?.indexation_clause_analysis?.symmetric_adjustment === false ? "false" : "true"}</p>
+                  </div>
+                  <div className="flex w-[45%] justify-start items-center gap-2.5 border border-gray-300 rounded-lg p-2">
+                    <h3 className="text-2xl font-semibold text-gray-800">Einstellintervall:</h3>
+                    <p>{isResponse?.indexation_clause_analysis?.adjustment_interval}</p>
+                  </div>
+                  <div className="flex flex-col w-full justify-start items-start p-2 gap-2.5 border border-gray-300 rounded-lg">
+                    <h3 className="text-2xl font-semibold text-gray-800">Klauseltext:</h3>
+                    <p>{isResponse?.indexation_clause_analysis?.clause_text}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* VPI Validation */}
+              <div className="w-[90%] mx-auto mt-8">
+                <h1 className="text-gray-800 text-4xl my-10 font-bold">VPI-Validierung</h1>
+                <div className="flex flex-wrap justify-between items-center gap-5">
+                  <div className="flex w-[45%] flex-col justify-start items-start gap-2.5 border border-gray-300 rounded-lg p-2">
+                    <h3 className="text-2xl font-semibold text-gray-800">Kommentar:</h3>
+                    <p>{isResponse?.vpi_validation?.comment}</p>
+                  </div>
+                  <div className="flex w-[45%] flex-col justify-start items-start gap-2.5 border border-gray-300 rounded-lg p-2">
+                    <h3 className="text-2xl font-semibold text-gray-800">Indexierung gültig:</h3>
+                    <p>{isResponse?.vpi_validation?.indexation_valid}</p>
+                  </div>
+                  <div className="flex w-[45%] flex-col justify-start items-start gap-2.5 border border-gray-300 rounded-lg p-2">
+                    <h3 className="text-2xl font-semibold text-gray-800">Basisjahr oder Startdatum:</h3>
+                    <p>{isResponse?.vpi_validation?.base_year_or_start_date}</p>
+                  </div>
+                  <div className="flex w-[45%] flex-col justify-start items-start gap-2.5 border border-gray-300 rounded-lg p-2">
+                    <h3 className="text-2xl font-semibold text-gray-800">Datum der letzten Anpassung:</h3>
+                    <p>{isResponse?.vpi_validation?.last_adjustment_date}</p>
+                  </div>
+                  <div className="flex w-[45%] flex-col justify-start items-start gap-2.5 border border-gray-300 rounded-lg p-2">
+                    <h3 className="text-2xl font-semibold text-gray-800">voraussichtliche Miete:</h3>
+                    <p>{isResponse?.vpi_validation?.expected_rent}</p>
+                  </div>
+                  <div className="flex w-[45%] flex-col justify-start items-start gap-2.5 border border-gray-300 rounded-lg p-2">
+                    <h3 className="text-2xl font-semibold text-gray-800">aktuelle Miete:</h3>
+                    <p>{isResponse?.vpi_validation?.current_rent}</p>
+                  </div>
+                  <div className="flex w-[45%] flex-col justify-start items-start gap-2.5 border border-gray-300 rounded-lg p-2">
+                    <h3 className="text-2xl font-semibold text-gray-800">Unterschied in Prozent:</h3>
+                    <p>{isResponse?.vpi_validation?.difference_percent}</p>
+                  </div>
+                  <div className="flex w-[45%] justify-start items-center gap-2.5 border border-gray-300 rounded-lg p-2">
+                    <h3 className="text-2xl font-semibold text-gray-800">innerhalb der Toleranz:</h3>
+                    <p>{isResponse?.vpi_validation?.within_tolerance === false ? "false" : "true"}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Richtwert Validation */}
+              <div className="w-[90%] mx-auto mt-8">
+                <h1 className="text-gray-800 text-4xl my-10 font-bold">Richtwertvalidierung</h1>
+                <div className="flex flex-wrap justify-between items-center gap-5">
+                  <div className="flex w-[45%] flex-col justify-start items-start gap-2.5 border border-gray-300 rounded-lg p-2">
+                    <h3 className="text-2xl font-semibold text-gray-800">anwendbar:</h3>
+                    <p>{isResponse?.richtwert_validation?.applicable === true ? "true" : "false"}</p>
+                  </div>
+                  <div className="flex w-[45%] flex-col justify-start items-start gap-2.5 border border-gray-300 rounded-lg p-2">
+                    <h3 className="text-2xl font-semibold text-gray-800">Höchstmiete erlaubt:</h3>
+                    <p>{isResponse?.richtwert_validation?.max_rent_allowed}</p>
+                  </div>
+                  <div className="flex w-[45%] flex-col justify-start items-start gap-2.5 border border-gray-300 rounded-lg p-2">
+                    <h3 className="text-2xl font-semibold text-gray-800">gültig:</h3>
+                    <p>{isResponse?.richtwert_validation?.valid}</p>
+                  </div>
+                  <div className="flex w-[45%] flex-col justify-start items-start gap-2.5 border border-gray-300 rounded-lg p-2">
+                    <h3 className="text-2xl font-semibold text-gray-800">Kommentar:</h3>
+                    <p>{isResponse?.richtwert_validation?.comment}</p>
+                  </div>
+                  <div className="flex w-[45%] flex-col justify-start items-start gap-2.5 border border-gray-300 rounded-lg p-2">
+                    <h3 className="text-2xl font-semibold text-gray-800">Aktuelle Miete:</h3>
+                    <p>{isResponse?.richtwert_validation?.current_rent}</p>
+                  </div>
+                  <div className="flex w-[45%] flex-col justify-start items-start gap-2.5 border border-gray-300 rounded-lg p-2">
+                    <h3 className="text-2xl font-semibold text-gray-800">Überschussbetrag:</h3>
+                    <p>{isResponse?.richtwert_validation?.excess_amount}</p>
+                  </div>
+                  <div className="flex w-[45%] flex-col justify-start items-start gap-2.5 border border-gray-300 rounded-lg p-2">
+                    <h3 className="text-2xl font-semibold text-gray-800">Überschussprozent:</h3>
+                    <p>{isResponse?.richtwert_validation?.excess_percent}</p>
+                  </div>
+                </div>
+              </div>
+
               {/* Action Buttons */}
               <div className="w-[90%] lg:w-[90%] my-10 mx-auto flex flex-col lg:flex-row justify-center gap-10 items-center">
                 <Button
