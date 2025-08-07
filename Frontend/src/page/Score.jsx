@@ -1,214 +1,233 @@
-"use client"
-import { useState, useEffect, useCallback, useMemo } from "react"
-import { useNavigate } from "react-router-dom"
-import { FaFile, FaFileUpload, FaUserCircle } from "react-icons/fa"
-import Button from "../components/Button"
-import Header from "../Navigation/Header"
-import { AipostReq } from "../api/AiAnalyticsAxios"
-import { IoCalendarNumberOutline, IoLocationOutline } from "react-icons/io5"
-import { PiBedBold } from "react-icons/pi"
-import { MdEuro } from "react-icons/md"
+"use client";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  FaCheckCircle,
+  FaClipboard,
+  FaFile,
+  FaFileSignature,
+  FaFileUpload,
+  FaUserCircle,
+} from "react-icons/fa";
+import Button from "../components/Button";
+import Header from "../Navigation/Header";
+import { AipostReq } from "../api/AiAnalyticsAxios";
+import { IoCalendarNumberOutline, IoLocationOutline } from "react-icons/io5";
+import { PiBedBold } from "react-icons/pi";
+import { MdEuro } from "react-icons/md";
+import { FiAlertCircle, FiFileText } from "react-icons/fi";
+import { FaShield } from "react-icons/fa6";
 
 const Score = () => {
-  const [file, setFile] = useState(null)
-  const [fileName, setFileName] = useState("")
-  const [uploading, setUploading] = useState(false)
-  const [isAllowed, setIsAllowed] = useState(false)
-  const [isResponse, setIsResponse] = useState(null)
-  const [isIllegal, setIsIllegal] = useState([])
-  const [isQuestionable, setIsQuestionable] = useState([])
-  const [islegal, setIslegal] = useState([])
-  // Animation states
-  const [animatedRiskScore, setAnimatedRiskScore] = useState(0)
-  const [animatedRentScore, setAnimatedRentScore] = useState(0)
-  const [showAnimation, setShowAnimation] = useState(false)
-  const [isStructureResponse, setIsStructureResponse] = useState()
-  const navigate = useNavigate()
+  const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [isAllowed, setIsAllowed] = useState(false);
+  const [isResponse, setIsResponse] = useState(null);
+  const [isIllegal, setIsIllegal] = useState([]);
+  const [isQuestionable, setIsQuestionable] = useState([]);
+  const [islegal, setIslegal] = useState([]);
+  const [animatedRiskScore, setAnimatedRiskScore] = useState(0);
+  const [animatedRentScore, setAnimatedRentScore] = useState(0);
+  const [showAnimation, setShowAnimation] = useState(false);
+  const [isStructureResponse, setIsStructureResponse] = useState();
+  const navigate = useNavigate();
 
-  // Check authentication
   useEffect(() => {
-    const token = sessionStorage.getItem("loginToken")
+    const token = sessionStorage.getItem("loginToken");
     if (token) {
-      setIsAllowed(true)
+      setIsAllowed(true);
     } else {
-      navigate("/")
+      navigate("/");
     }
-  }, [navigate])
+  }, [navigate]);
 
-  // Animation effect
   useEffect(() => {
     if (isResponse?.risk_score_percentage && !showAnimation) {
-      setShowAnimation(true)
-      const riskTarget = Number.parseInt(isResponse.risk_score_percentage, 10) || 0
-      const rentTarget = Number.parseInt(isResponse?.rent_comparison?.percent, 10) || 0
+      setShowAnimation(true);
+      const riskTarget =
+        Number.parseInt(isResponse.risk_score_percentage, 10) || 0;
+      const rentTarget =
+        Number.parseInt(isResponse?.rent_comparison?.percent, 10) || 0;
 
-      setAnimatedRiskScore(0)
-      setAnimatedRentScore(0)
+      setAnimatedRiskScore(0);
+      setAnimatedRentScore(0);
 
       setTimeout(() => {
-        let riskCurrent = 0
-        let rentCurrent = 0
-        const duration = 2000
-        const steps = 50
-        const riskIncrement = riskTarget / steps
-        const rentIncrement = rentTarget / steps
-        const stepDuration = duration / steps
+        let riskCurrent = 0;
+        let rentCurrent = 0;
+        const duration = 2000;
+        const steps = 50;
+        const riskIncrement = riskTarget / steps;
+        const rentIncrement = rentTarget / steps;
+        const stepDuration = duration / steps;
 
         const riskInterval = setInterval(() => {
-          riskCurrent += riskIncrement
+          riskCurrent += riskIncrement;
           if (riskCurrent >= riskTarget) {
-            riskCurrent = riskTarget
-            clearInterval(riskInterval)
+            riskCurrent = riskTarget;
+            clearInterval(riskInterval);
           }
-          setAnimatedRiskScore(Math.round(riskCurrent))
-        }, stepDuration)
+          setAnimatedRiskScore(Math.round(riskCurrent));
+        }, stepDuration);
 
         const rentInterval = setInterval(() => {
-          rentCurrent += rentIncrement
+          rentCurrent += rentIncrement;
           if (rentCurrent >= rentTarget) {
-            rentCurrent = rentTarget
-            clearInterval(rentInterval)
+            rentCurrent = rentTarget;
+            clearInterval(rentInterval);
           }
-          setAnimatedRentScore(Math.round(rentCurrent))
-        }, stepDuration)
+          setAnimatedRentScore(Math.round(rentCurrent));
+        }, stepDuration);
 
         return () => {
-          clearInterval(riskInterval)
-          clearInterval(rentInterval)
-        }
-      }, 100)
+          clearInterval(riskInterval);
+          clearInterval(rentInterval);
+        };
+      }, 100);
     }
-  }, [isResponse, showAnimation])
+  }, [isResponse, showAnimation]);
 
-  // Handle file selection with proper validation
   const handleFileChange = useCallback((e) => {
-    const selectedFile = e.target.files[0]
+    const selectedFile = e.target.files[0];
     if (selectedFile) {
-      // File size validation (10MB = 10 * 1024 * 1024 bytes)
-      const maxSizeInBytes = 10 * 1024 * 1024
+      const maxSizeInBytes = 10 * 1024 * 1024;
       if (selectedFile.size > maxSizeInBytes) {
-        alert("Datei ist zu groß. Maximum 10MB erlaubt.")
-        e.target.value = "" // Clear the input
-        return
+        alert("Datei ist zu groß. Maximum 10MB erlaubt.");
+        e.target.value = "";
+        return;
       }
 
-      // File type validation
-      const allowedExtensions = ["pdf", "docx", "doc", "jpg", "jpeg", "png", "tiff"]
-      const fileName = selectedFile.name.toLowerCase()
-      const fileExtension = fileName.split(".").pop()
+      const allowedExtensions = [
+        "pdf",
+        "docx",
+        "doc",
+        "jpg",
+        "jpeg",
+        "png",
+        "tiff",
+      ];
+      const fileName = selectedFile.name.toLowerCase();
+      const fileExtension = fileName.split(".").pop();
 
       if (!allowedExtensions.includes(fileExtension)) {
-        alert("Ungültiger Dateityp. Nur PDF, DOCX, DOC, JPG, JPEG, PNG und TIFF sind erlaubt.")
-        e.target.value = "" // Clear the input
-        return
+        alert(
+          "Ungültiger Dateityp. Nur PDF, DOCX, DOC, JPG, JPEG, PNG und TIFF sind erlaubt."
+        );
+        e.target.value = "";
+        return;
       }
 
-      // File type validation using MIME type as additional check
       const allowedMimeTypes = [
         "application/pdf",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // docx
-        "application/msword", // doc
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/msword",
         "image/jpeg",
         "image/jpg",
         "image/png",
         "image/tiff",
-      ]
+      ];
 
-      if (!allowedMimeTypes.includes(selectedFile.type) && selectedFile.type !== "") {
-        alert("Ungültiger Dateityp. Nur PDF, DOCX, DOC, JPG, JPEG, PNG und TIFF sind erlaubt.")
-        e.target.value = "" // Clear the input
-        return
+      if (
+        !allowedMimeTypes.includes(selectedFile.type) &&
+        selectedFile.type !== ""
+      ) {
+        alert(
+          "Ungültiger Dateityp. Nur PDF, DOCX, DOC, JPG, JPEG, PNG und TIFF sind erlaubt."
+        );
+        e.target.value = "";
+        return;
       }
 
-      setFile(selectedFile)
-      setFileName(selectedFile.name)
+      setFile(selectedFile);
+      setFileName(selectedFile.name);
     }
-  }, [])
+  }, []);
 
-  // Handle file upload
   const handleUpload = useCallback(
     async (e) => {
-      e.preventDefault()
+      e.preventDefault();
       if (!file) {
-        alert("Bitte wählen Sie eine Datei aus.")
-        return
+        alert("Bitte wählen Sie eine Datei aus.");
+        return;
       }
 
-      const formData = new FormData()
-      formData.append("file", file)
+      const formData = new FormData();
+      formData.append("file", file);
 
       try {
-        setUploading(true)
-        const response = await AipostReq("/analyze", formData)
-        console.log("✅ Upload Response:", response)
+        setUploading(true);
+        const response = await AipostReq("/analyze", formData);
+        console.log("✅ Upload Response:", response);
 
-        const clauses = response?.data?.clauses_german || {}
-        setIsIllegal(clauses.illegal || [])
-        setIsQuestionable(clauses.questionable || [])
-        setIslegal(clauses.legal || [])
+        const clauses = response?.data?.clauses_german || {};
+        setIsIllegal(clauses.illegal || []);
+        setIsQuestionable(clauses.questionable || []);
+        setIslegal(clauses.legal || []);
 
-        const responseData = response?.data || null
-        setIsResponse(responseData)
-        setIsStructureResponse(responseData?.structured_summary_json)
+        const responseData = response?.data || null;
+        setIsResponse(responseData);
+        setIsStructureResponse(responseData?.structured_summary_json);
 
-        setShowAnimation(false)
+        setShowAnimation(false);
       } catch (error) {
-        console.error("❌ Upload Error:", error)
-        alert("Fehler beim Hochladen der Datei. Bitte versuchen Sie es erneut.")
+        console.error("❌ Upload Error:", error);
+        alert(
+          "Fehler beim Hochladen der Datei. Bitte versuchen Sie es erneut."
+        );
       } finally {
-        setUploading(false)
+        setUploading(false);
       }
     },
-    [file],
-  )
+    [file]
+  );
 
-  // Reset form
   const handleNewAnalysis = useCallback(() => {
-    setFile(null)
-    setFileName("")
-    setIsResponse(null)
-    setIsIllegal([])
-    setIsQuestionable([])
-    setIslegal([])
-    setAnimatedRiskScore(0)
-    setAnimatedRentScore(0)
-    setShowAnimation(false)
-    // Clear file input
-    const fileInput = document.getElementById("fileInput")
+    setFile(null);
+    setFileName("");
+    setIsResponse(null);
+    setIsIllegal([]);
+    setIsQuestionable([]);
+    setIslegal([]);
+    setAnimatedRiskScore(0);
+    setAnimatedRentScore(0);
+    setShowAnimation(false);
+    const fileInput = document.getElementById("fileInput");
     if (fileInput) {
-      fileInput.value = ""
+      fileInput.value = "";
     }
-  }, [])
+  }, []);
 
-  // Memoized values
   const structuredSummary = useMemo(() => {
-    return isResponse?.structured_summary_json || {}
-  }, [isResponse])
+    return isResponse?.structured_summary_json || {};
+  }, [isResponse]);
 
   const riskScoreColor = useMemo(() => {
     if (animatedRiskScore > 70) {
-      return "linear-gradient(90deg, #ef4444, #dc2626)"
+      return "linear-gradient(90deg, #ef4444, #dc2626)";
     } else if (animatedRiskScore > 40) {
-      return "linear-gradient(90deg, #f59e0b, #d97706)"
+      return "linear-gradient(90deg, #f59e0b, #d97706)";
     }
-    return "linear-gradient(90deg, #10b981, #059669)"
-  }, [animatedRiskScore])
+    return "linear-gradient(90deg, #10b981, #059669)";
+  }, [animatedRiskScore]);
 
-  // Don't render if not authenticated
-  if (!isAllowed) return null
+  if (!isAllowed) return null;
 
   return (
     <div className="w-full">
-      {/* Header Section */}
       <div className="bg-[#132438] flex flex-col items-center justify-start py-10 px-4">
         <div className="container mx-auto min-h-[500px]">
           <Header />
           <div className="text-center h-[300px] my-[50px] flex flex-col justify-center items-center">
-            <h1 className="text-white text-4xl font-bold">Mietvertrag KI-Analyse</h1>
+            <h1 className="text-white text-4xl font-bold">
+              Mietvertrag KI-Analyse
+            </h1>
             <p className="text-white text-[16px] w-[100%] lg:w-[80%] mx-auto mt-4">
-              Unsere Lösung liest und versteht Mietverträge automatisch, erkennt kritische Klauseln im Kontext aktueller
-              OGH-Urteile und Gesetzeslagen, vergleicht die Miete mit dem aktuellen Index und zeigt Risiken klar
-              verständlich an – Nutzer:innen können auf Knopfdruck einen vollständigen Prüfbericht erstellen oder direkt
+              Unsere Lösung liest und versteht Mietverträge automatisch, erkennt
+              kritische Klauseln im Kontext aktueller OGH-Urteile und
+              Gesetzeslagen, vergleicht die Miete mit dem aktuellen Index und
+              zeigt Risiken klar verständlich an – Nutzer:innen können auf
+              Knopfdruck einen vollständigen Prüfbericht erstellen oder direkt
               rechtliche Unterstützung anfordern
             </p>
           </div>
@@ -216,10 +235,14 @@ const Score = () => {
       </div>
 
       <div className="container mx-auto p-5">
-        {/* File Upload Form */}
-        <form className="mt-10 rounded-md w-[100%] lg:w-[90%] mx-auto" onSubmit={handleUpload}>
+        <form
+          className="mt-10 rounded-md w-[100%] lg:w-[90%] mx-auto"
+          onSubmit={handleUpload}
+        >
           <div className="border-2 border-dashed border-gray-400 min-h-[300px] p-6 rounded-lg text-center flex flex-col justify-center items-center">
-            <p className="mb-4 font-semibold text-gray-800">PDF, DOCX, DOC, JPG, JPEG, PNG, TIFF – max. 10 MB</p>
+            <p className="mb-4 font-semibold text-gray-800">
+              PDF, DOCX, DOC, JPG, JPEG, PNG, TIFF – max. 10 MB
+            </p>
             <input
               type="file"
               accept=".pdf,.docx,.doc,.jpg,.jpeg,.png,.tiff"
@@ -242,13 +265,25 @@ const Score = () => {
                   type="submit"
                   disabled={uploading}
                   className={`h-[50px] w-[80%] lg:w-[40%] text-white py-2 rounded transition-colors duration-300 ${
-                    uploading ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+                    uploading
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-green-600 hover:bg-green-700"
                   }`}
                 >
                   {uploading ? (
                     <span className="flex items-center justify-center gap-2">
-                      <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <svg
+                        className="animate-spin h-5 w-5 text-white"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
                         <path
                           className="opacity-75"
                           fill="currentColor"
@@ -265,18 +300,23 @@ const Score = () => {
             </div>
           </div>
 
-          {/* File Display */}
           <div className="flex justify-between items-center gap-2 w-[100%] mt-8">
             <div className="w-[50%] flex justify-start items-center gap-2.5">
               {fileName ? (
                 <>
                   <FaFile className="text-7xl text-gray-500" />
-                  <label className="break-all">{fileName.length > 20 ? `${fileName.slice(0, 20)}...` : fileName}</label>
+                  <label className="break-all">
+                    {fileName.length > 20
+                      ? `${fileName.slice(0, 20)}...`
+                      : fileName}
+                  </label>
                 </>
               ) : (
                 <>
                   <FaFileUpload className="text-7xl text-gray-500" />
-                  <label className="text-gray-500 text-[18px]">File Upload</label>
+                  <label className="text-gray-500 text-[18px]">
+                    File Upload
+                  </label>
                 </>
               )}
             </div>
@@ -292,18 +332,17 @@ const Score = () => {
           </div>
         </form>
 
-        {/* Analysis Results */}
         {isResponse && (
           <div>
-            {/* Contract Summary */}
             <div className="w-[100%] lg:w-[90%] mx-auto mt-8">
               <h1 className="text-2xl lg:text-4xl my-3 font-semibold text-[var(--black-color)]">
                 Zusammenfassung der Analyse
               </h1>
 
-              {/* Contract Overview */}
               <div className="my-5">
-                <h1 className="text-2xl font-[500] text-[var(--black-color)]">Vertragsübersicht</h1>
+                <h1 className="text-2xl font-[500] text-[var(--black-color)]">
+                  Vertragsübersicht
+                </h1>
                 <div className="flex flex-col lg:flex-row justify-start items-center lg:gap-5">
                   {structuredSummary?.parties?.landlord && (
                     <div className="w-[100%] lg:w-[30%] flex rounded-md my-5 justify-start items-center gap-4 p-2 border border-gray-300">
@@ -311,7 +350,9 @@ const Score = () => {
                         <FaUserCircle className="text-4xl text-[var(--black-color)]" />
                       </div>
                       <div>
-                        <h1 className="text-[20px] font-[500]">{structuredSummary.parties.landlord}</h1>
+                        <h1 className="text-[20px] font-[500]">
+                          {structuredSummary.parties.landlord}
+                        </h1>
                       </div>
                     </div>
                   )}
@@ -321,18 +362,21 @@ const Score = () => {
                         <FaUserCircle className="text-4xl text-[var(--black-color)]" />
                       </div>
                       <div>
-                        <h1 className="text-[20px] font-[500]">{structuredSummary.parties.tenant}</h1>
+                        <h1 className="text-[20px] font-[500]">
+                          {structuredSummary.parties.tenant}
+                        </h1>
                       </div>
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Property Information */}
               <div className="flex flex-col justify-between items-start mb-5">
                 {structuredSummary?.residential_property && (
                   <div className="w-[100%] lg:w-auto">
-                    <h2 className="text-2xl font-[500] text-[var(--black-color)] my-4">Wohnobjekt</h2>
+                    <h2 className="text-2xl font-[500] text-[var(--black-color)] my-4">
+                      Wohnobjekt
+                    </h2>
                     <div className="border border-gray-300 rounded-lg py-5 px-10 flex flex-col gap-5">
                       {structuredSummary.residential_property.address && (
                         <div className="w-[100%] flex justify-start gap-3 items-center pb-4 border-b-2 border-gray-300">
@@ -340,7 +384,9 @@ const Score = () => {
                             <IoLocationOutline className="text-4xl text-[var(--black-color)]" />
                           </div>
                           <div>
-                            <p className="font-[500]">{structuredSummary.residential_property.address}</p>
+                            <p className="font-[500]">
+                              {structuredSummary.residential_property.address}
+                            </p>
                           </div>
                         </div>
                       )}
@@ -351,7 +397,9 @@ const Score = () => {
                               <PiBedBold className="text-4xl text-[var(--black-color)]" />
                             </div>
                             <div>
-                              <p className="font-[500]">{structuredSummary.residential_property.rooms}</p>
+                              <p className="font-[500]">
+                                {structuredSummary.residential_property.rooms}
+                              </p>
                             </div>
                           </div>
                         )}
@@ -362,7 +410,9 @@ const Score = () => {
                               className="h-[30px] w-[30px] object-contain"
                               alt="House icon"
                             />
-                            <p className="font-[500]">{structuredSummary.residential_property.size}</p>
+                            <p className="font-[500]">
+                              {structuredSummary.residential_property.size}
+                            </p>
                           </div>
                         )}
                       </div>
@@ -370,10 +420,11 @@ const Score = () => {
                   </div>
                 )}
 
-                {/* Rental Period & Costs */}
                 {structuredSummary?.rental_period_costs && (
                   <div className="w-[100%] lg:w-[57%] mt-5">
-                    <h2 className="text-2xl font-[500] text-[var(--black-color)] my-4">Mietzeit & Kosten</h2>
+                    <h2 className="text-2xl font-[500] text-[var(--black-color)] my-4">
+                      Mietzeit & Kosten
+                    </h2>
                     <div className="border border-gray-300 rounded-lg py-5 px-10 flex flex-col gap-5">
                       <div className="w-[100%] flex justify-start gap-3 items-center pb-4 border-b-2 border-gray-300">
                         <div className="w-full flex justify-between items-center">
@@ -381,9 +432,15 @@ const Score = () => {
                             <div>
                               <IoCalendarNumberOutline className="text-4xl text-[var(--black-color)]" />
                             </div>
-                            {structuredSummary.rental_period_costs.start_date && (
+                            {structuredSummary.rental_period_costs
+                              .start_date && (
                               <div>
-                                <p className="font-[500]">{structuredSummary.rental_period_costs.start_date}</p>
+                                <p className="font-[500]">
+                                  {
+                                    structuredSummary.rental_period_costs
+                                      .start_date
+                                  }
+                                </p>
                               </div>
                             )}
                           </div>
@@ -401,18 +458,22 @@ const Score = () => {
                               <MdEuro className="text-4xl text-[var(--black-color)]" />
                             </div>
                             <div>
-                              <p className="font-[500]">{structuredSummary.rental_period_costs.rent}</p>
+                              <p className="font-[500]">
+                                {structuredSummary.rental_period_costs.rent}
+                              </p>
                             </div>
                           </div>
                         )}
                         {structuredSummary.rental_period_costs.deposit && (
-                          <div className="flex justify-center items-center gap-4 bg-[var(--green-color)] py-1 rounded-md px-2 lg:w-[30%] lg:px-0 my-3 lg:my-0 text-[var(--white-color)]">
+                          <div className="flex justify-center items-center gap-4 bg-[var(--green-color)] py-1 rounded-md px-2 lg:w-[30%] my-3 lg:my-0 text-[var(--white-color)]">
                             <img
                               src="/assets/images/Admin/cash.png"
                               className="h-[40px] w-[40px] object-contain"
                               alt="Cash icon"
                             />
-                            <p className="font-[500]">{structuredSummary.rental_period_costs.deposit}</p>
+                            <p className="font-[500] text-[13px]">
+                              {structuredSummary.rental_period_costs.deposit}
+                            </p>
                           </div>
                         )}
                       </div>
@@ -421,69 +482,114 @@ const Score = () => {
                 )}
               </div>
 
-              {/* Regulations Section */}
-              <div className="lg:min-h-[600px] w-full bg-[var(--green-color)] my-[50px] rounded-4xl flex justify-center items-center">
-                <div className="w-[95%] h-[100%] flex flex-col gap-7 lg:gap-0 p-5 lg:p-5 lg:flex-row justify-between items-start">
-                  <div className="h-[100%] w-[100%] lg:w-[32%] lg:border-r lg:border-[#288C81] flex flex-col justify-start items-start gap-5">
-                    <h1 className="text-2xl text-[var(--white-color)]">Regelungen</h1>
-                    {isStructureResponse?.regulations?.map((reg, index) => {
-                      return (
-                        <div
-                          key={index}
-                          className="min-h-[250px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center"
-                        >
-                          <div className="w-[90%] flex justify-center items-center gap-2">
-                            <div className="w-[100%] p-2">
-                              <p className="mt-3 text-[var(--white-color)] text-sm font-[200]">{reg}</p>
+              {/* Regulations Section - Flexbox Version */}
+              <div className="w-full bg-[var(--green-color)] my-[50px] rounded-4xl overflow-hidden shadow-lg">
+                <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+                  <div className="flex flex-col lg:flex-row gap-8">
+                    {/* Regulations Column */}
+                    <div className="flex-1 flex flex-col space-y-6">
+                      <div className="flex items-center space-x-3">
+                        <div className="p-2 bg-[#288C81] rounded-lg">
+                          <FiFileText className="text-white h-6 w-6" />
+                        </div>
+                        <h2 className="text-2xl font-semibold text-white">
+                          Regelungen
+                        </h2>
+                      </div>
+
+                      <div className="space-y-4">
+                        {isStructureResponse?.regulations?.map((reg, index) => (
+                          <div
+                            key={index}
+                            className="bg-[#288C81]/90 hover:bg-[#288C81] transition-all duration-300 rounded-xl p-6 shadow-md"
+                          >
+                            <div className="flex items-start space-x-3">
+                              <div className="flex-shrink-0 mt-1">
+                                <FaCheckCircle className="text-green-200 h-5 w-5" />
+                              </div>
+                              <p className="text-white text-sm leading-relaxed">
+                                {reg}
+                              </p>
                             </div>
                           </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Return & Written Form Column */}
+                    <div className="flex-1 flex flex-col space-y-6 lg:border-l lg:border-r lg:border-[#288C81] lg:px-8">
+                      <div className="flex items-center space-x-3">
+                        <div className="p-2 bg-[#288C81] rounded-lg">
+                          <FaClipboard className="text-white h-6 w-6" />
                         </div>
-                      )
-                    })}
-                  </div>
-                  <div className="h-[100%] w-[100%] lg:w-[32%] lg:border-r lg:border-[#288C81] flex flex-col justify-start items-start gap-5">
-                    <h1 className="text-2xl text-[var(--white-color)]">Rückgabe & Schriftform</h1>
-                    {isStructureResponse?.backspace_written_form?.map((bwf, index) => {
-                      return (
-                        <div
-                          key={index}
-                          className="min-h-[250px] w-[95%] bg-[#288C81] rounded-lg flex justify-center items-center"
-                        >
-                          <div className="w-[90%] flex justify-center items-center gap-2">
-                            <div className="w-[100%]">
-                              <p className="text-[var(--white-color)] font-[200] text-sm">{bwf}</p>
+                        <h2 className="text-2xl font-semibold text-white">
+                          Rückgabe & Schriftform
+                        </h2>
+                      </div>
+
+                      <div className="space-y-4">
+                        {isStructureResponse?.backspace_written_form?.map(
+                          (bwf, index) => (
+                            <div
+                              key={index}
+                              className="bg-[#288C81]/90 hover:bg-[#288C81] transition-all duration-300 rounded-xl p-6 shadow-md"
+                            >
+                              <div className="flex items-start space-x-3">
+                                <div className="flex-shrink-0 mt-1">
+                                  <FaFileSignature className="text-green-200 h-5 w-5" />
+                                </div>
+                                <p className="text-white text-sm leading-relaxed">
+                                  {bwf}
+                                </p>
+                              </div>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Duties Column */}
+                    <div className="flex-1 flex flex-col space-y-6">
+                      <div className="flex items-center space-x-3">
+                        <div className="p-2 bg-[#288C81] rounded-lg">
+                          <FaShield className="text-white h-6 w-6" />
+                        </div>
+                        <h2 className="text-2xl font-semibold text-white">
+                          Pflichten
+                        </h2>
+                      </div>
+
+                      <div className="space-y-4">
+                        {isStructureResponse?.duties?.map((duties, index) => (
+                          <div
+                            key={index}
+                            className="bg-[#288C81]/90 hover:bg-[#288C81] transition-all duration-300 rounded-xl p-6 shadow-md"
+                          >
+                            <div className="flex items-start space-x-3">
+                              <div className="flex-shrink-0 mt-1">
+                                <FiAlertCircle className="text-green-200 h-5 w-5" />
+                              </div>
+                              <p className="text-white text-sm leading-relaxed">
+                                {duties}
+                              </p>
                             </div>
                           </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                  <div className="h-[100%] w-[100%] lg:w-[32%] flex flex-col justify-start items-start gap-5">
-                    <h1 className="text-2xl text-[var(--white-color)]">Pflichten</h1>
-                    {isStructureResponse?.duties?.map((duties, index) => {
-                      return (
-                        <div
-                          key={index}
-                          className="min-h-[250px] w-[100%] bg-[#288C81] rounded-lg flex justify-center items-center"
-                        >
-                          <div className="w-[90%] flex justify-center items-center gap-2">
-                            <div className="w-[100%]">
-                              <p className="mt-3 text-[var(--white-color)] text-sm font-[200]">{duties}</p>
-                            </div>
-                          </div>
-                        </div>
-                      )
-                    })}
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Risk Score Section */}
               <div className="w-[100%] lg:w-[90%] mx-auto mt-8">
-                <h1 className="text-2xl lg:text-4xl font-semibold text-gray-800">Ergebnisse der Analyse</h1>
+                <h1 className="text-2xl lg:text-4xl font-semibold text-gray-800">
+                  Ergebnisse der Analyse
+                </h1>
                 <div className="flex justify-between items-center my-4">
                   <span className="text-lg font-medium">Risiko-Score</span>
-                  <span className="text-lg font-bold text-orange-600">{animatedRiskScore}%</span>
+                  <span className="text-lg font-bold text-orange-600">
+                    {animatedRiskScore}%
+                  </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-6 overflow-hidden shadow-inner">
                   <div
@@ -500,9 +606,10 @@ const Score = () => {
                 </div>
               </div>
 
-              {/* Clause Evaluation */}
               <div className="w-[100%] lg:w-[90%] mx-auto mt-8">
-                <h1 className="text-2xl font-semibold text-gray-800">Klauselbewertung</h1>
+                <h1 className="text-2xl font-semibold text-gray-800">
+                  Klauselbewertung
+                </h1>
                 <div className="w-[100%] my-4 border border-gray-300 rounded-lg overflow-hidden shadow-sm">
                   {isIllegal.length > 0 && (
                     <div className="flex justify-between items-center bg-white p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200">
@@ -549,14 +656,19 @@ const Score = () => {
                 </div>
               </div>
 
-              {/* Rent Comparison */}
               <div className="w-[100%] lg:w-[90%] mx-auto mt-8">
-                <h1 className="text-2xl font-semibold text-gray-800">Eingabefeld:</h1>
-                <p className="text-gray-600 mb-4">{structuredSummary?.rental_period_costs?.rent}</p>
+                <h1 className="text-2xl font-semibold text-gray-800">
+                  Eingabefeld:
+                </h1>
+                <p className="text-gray-600 mb-4">
+                  {structuredSummary?.rental_period_costs?.rent}
+                </p>
                 <div className="p-4 w-full border border-gray-300 rounded-lg my-4 bg-white shadow-sm">
                   <div className="flex flex-col lg:flex-row justify-between items-center mb-4">
                     <div className="w-full lg:w-[50%] text-center lg:text-left">
-                      <p className="text-gray-800 font-medium">Ausgabe (nach Berechnung)</p>
+                      <p className="text-gray-800 font-medium">
+                        Ausgabe (nach Berechnung)
+                      </p>
                     </div>
                     <span className="text-amber-600 font-bold text-lg">
                       {animatedRentScore}% {isResponse?.rent_comparison?.text}
@@ -577,108 +689,285 @@ const Score = () => {
                 </div>
               </div>
 
-              {/* Indexation Clause Analysis */}
-              <div className="lg:w-[90%] w-full mx-auto mt-8">
-                <h1 className="text-gray-800 my-10 text-2xl lg:text-4xl font-bold">Analyse der Indexierungsklausel</h1>
-                <div className="flex flex-wrap justify-between items-center gap-5">
-                  <div className="flex w-full lg:w-[45%] justify-start items-center gap-2.5 border border-gray-300 rounded-lg p-2">
-                    <h3 className="text-2xl font-semibold text-gray-800">Indexname:</h3>
-                    <p>{isResponse?.indexation_clause_analysis?.index_name}</p>
-                  </div>
-                  <div className="flex w-full lg:w-[45%] justify-start items-center gap-2.5 border border-gray-300 rounded-lg p-2">
-                    <h3 className="text-2xl font-semibold text-gray-800">Schwellenprozentsatz:</h3>
-                    <p>{isResponse?.indexation_clause_analysis?.threshold_percent}</p>
-                  </div>
-                  <div className="flex w-full lg:w-[45%] justify-start items-center gap-2.5 border border-gray-300 rounded-lg p-2">
-                    <h3 className="text-2xl font-semibold text-gray-800">symmetrische Einstellung:</h3>
-                    <p>{isResponse?.indexation_clause_analysis?.symmetric_adjustment === false ? "false" : "true"}</p>
-                  </div>
-                  <div className="flex w-full lg:w-[45%] justify-start items-center gap-2.5 border border-gray-300 rounded-lg p-2">
-                    <h3 className="text-2xl font-semibold text-gray-800">Einstellintervall:</h3>
-                    <p>{isResponse?.indexation_clause_analysis?.adjustment_interval}</p>
-                  </div>
-                  <div className="flex flex-col w-full justify-start items-start p-2 gap-2.5 border border-gray-300 rounded-lg">
-                    <h3 className="text-2xl font-semibold text-gray-800">Klauseltext:</h3>
-                    <p>{isResponse?.indexation_clause_analysis?.clause_text}</p>
-                  </div>
+              <div className="w-full max-w-6xl mx-auto mt-8 px-4">
+                <h1 className="text-gray-800 my-10 text-2xl lg:text-3xl font-bold">
+                  Analyse der Indexierungsklausel
+                </h1>
+
+                <div className="flex flex-wrap gap-4">
+                  {isResponse?.indexation_clause_analysis?.index_name && (
+                    <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                        Indexname:
+                      </h3>
+                      <p className="text-gray-600">
+                        {isResponse.indexation_clause_analysis.index_name}
+                      </p>
+                    </div>
+                  )}
+
+                  {isResponse?.indexation_clause_analysis?.threshold_percent !==
+                    undefined &&
+                    isResponse.indexation_clause_analysis.threshold_percent !==
+                      0 && (
+                      <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                          Schwellenprozentsatz:
+                        </h3>
+                        <p className="text-gray-600">
+                          {
+                            isResponse.indexation_clause_analysis
+                              .threshold_percent
+                          }
+                        </p>
+                      </div>
+                    )}
+
+                  {isResponse?.indexation_clause_analysis
+                    ?.symmetric_adjustment !== undefined && (
+                    <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                        Symmetrische Einstellung:
+                      </h3>
+                      <p className="text-gray-600">
+                        {isResponse.indexation_clause_analysis
+                          .symmetric_adjustment
+                          ? "Ja"
+                          : "Nein"}
+                      </p>
+                    </div>
+                  )}
+
+                  {isResponse?.indexation_clause_analysis
+                    ?.adjustment_interval && (
+                    <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                        Einstellintervall:
+                      </h3>
+                      <p className="text-gray-600">
+                        {
+                          isResponse.indexation_clause_analysis
+                            .adjustment_interval
+                        }
+                      </p>
+                    </div>
+                  )}
+
+                  {isResponse?.indexation_clause_analysis?.clause_text && (
+                    <div className="w-full bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                        Klauseltext:
+                      </h3>
+                      <p className="text-gray-600 whitespace-pre-line">
+                        {isResponse.indexation_clause_analysis.clause_text}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* VPI Validation */}
-              <div className="w-[90%] mx-auto mt-8">
-                <h1 className="text-gray-800 text-2xl lg:text-4xl my-10 font-bold">VPI-Validierung</h1>
-                <div className="flex flex-wrap justify-between items-center gap-5">
-                  <div className="flex w-full lg:w-[45%] flex-col justify-start items-start gap-2.5 border border-gray-300 rounded-lg p-2">
-                    <h3 className="text-2xl font-semibold text-gray-800">Kommentar:</h3>
-                    <p>{isResponse?.vpi_validation?.comment}</p>
-                  </div>
-                  <div className="flex w-full lg:w-[45%] flex-col lg:flex-row justify-start items-start lg:items-center gap-2.5 border border-gray-300 rounded-lg p-2">
-                    <h3 className="text-2xl font-semibold text-gray-800">Indexierung gültig:</h3>
-                    <p>{isResponse?.vpi_validation?.indexation_valid}</p>
-                  </div>
-                  <div className="flex w-full lg:w-[45%] flex-col justify-start items-start gap-2.5 border border-gray-300 rounded-lg p-2">
-                    <h3 className="text-2xl font-semibold text-gray-800">Basisjahr oder Startdatum:</h3>
-                    <p>{isResponse?.vpi_validation?.base_year_or_start_date}</p>
-                  </div>
-                  <div className="flex w-full lg:w-[45%] flex-col lg:flex-row justify-start items-start lg:items-center gap-2.5 border border-gray-300 rounded-lg p-2">
-                    <h3 className="text-2xl font-semibold text-gray-800">Datum der letzten Anpassung:</h3>
-                    <p>{isResponse?.vpi_validation?.last_adjustment_date}</p>
-                  </div>
-                  <div className="flex w-full lg:w-[45%] flex-col lg:flex-row justify-start items-start lg:items-center gap-2.5 border border-gray-300 rounded-lg p-2">
-                    <h3 className="text-2xl font-semibold text-gray-800">voraussichtliche Miete:</h3>
-                    <p>{isResponse?.vpi_validation?.expected_rent}</p>
-                  </div>
-                  <div className="flex w-full lg:w-[45%] flex-col lg:flex-row justify-start items-start lg:items-center gap-2.5 border border-gray-300 rounded-lg p-2">
-                    <h3 className="text-2xl font-semibold text-gray-800">aktuelle Miete:</h3>
-                    <p>{isResponse?.vpi_validation?.current_rent}</p>
-                  </div>
-                  <div className="flex w-full lg:w-[45%] flex-col lg:flex-row justify-start items-start lg:items-center gap-2.5 border border-gray-300 rounded-lg p-2">
-                    <h3 className="text-2xl font-semibold text-gray-800">Unterschied in Prozent:</h3>
-                    <p>{isResponse?.vpi_validation?.difference_percent}</p>
-                  </div>
-                  <div className="flex w-full lg:w-[45%] justify-start items-center gap-2.5 border border-gray-300 rounded-lg p-2">
-                    <h3 className="text-2xl font-semibold text-gray-800">innerhalb der Toleranz:</h3>
-                    <p>{isResponse?.vpi_validation?.within_tolerance === false ? "false" : "true"}</p>
-                  </div>
+              <div className="w-full max-w-6xl mx-auto mt-12 px-4">
+                <h1 className="text-gray-800 text-2xl lg:text-3xl my-10 font-bold">
+                  VPI-Validierung
+                </h1>
+
+                <div className="flex flex-wrap gap-4">
+                  {isResponse?.vpi_validation?.comment && (
+                    <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                        Kommentar:
+                      </h3>
+                      <p className="text-gray-600">
+                        {isResponse.vpi_validation.comment}
+                      </p>
+                    </div>
+                  )}
+
+                  {isResponse?.vpi_validation?.indexation_valid !==
+                    undefined && (
+                    <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                        Indexierung gültig:
+                      </h3>
+                      <p className="text-gray-600">
+                        {isResponse.vpi_validation.indexation_valid
+                          ? "Ja"
+                          : "Nein"}
+                      </p>
+                    </div>
+                  )}
+
+                  {isResponse?.vpi_validation?.base_year_or_start_date && (
+                    <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                        Basisjahr oder Startdatum:
+                      </h3>
+                      <p className="text-gray-600">
+                        {isResponse.vpi_validation.base_year_or_start_date}
+                      </p>
+                    </div>
+                  )}
+
+                  {isResponse?.vpi_validation?.last_adjustment_date && (
+                    <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                        Datum der letzten Anpassung:
+                      </h3>
+                      <p className="text-gray-600">
+                        {isResponse.vpi_validation.last_adjustment_date}
+                      </p>
+                    </div>
+                  )}
+
+                  {isResponse?.vpi_validation?.expected_rent !== undefined &&
+                    isResponse.vpi_validation.expected_rent !== 0 && (
+                      <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                          Voraussichtliche Miete:
+                        </h3>
+                        <p className="text-gray-600">
+                          {isResponse.vpi_validation.expected_rent}
+                        </p>
+                      </div>
+                    )}
+
+                  {isResponse?.vpi_validation?.current_rent !== undefined &&
+                    isResponse.vpi_validation.current_rent !== 0 && (
+                      <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                          Aktuelle Miete:
+                        </h3>
+                        <p className="text-gray-600">
+                          {isResponse.vpi_validation.current_rent}
+                        </p>
+                      </div>
+                    )}
+
+                  {isResponse?.vpi_validation?.difference_percent !==
+                    undefined &&
+                    isResponse.vpi_validation.difference_percent !== 0 && (
+                      <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                          Unterschied in Prozent:
+                        </h3>
+                        <p className="text-gray-600">
+                          {isResponse.vpi_validation.difference_percent}
+                        </p>
+                      </div>
+                    )}
+
+                  {isResponse?.vpi_validation?.within_tolerance !==
+                    undefined && (
+                    <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                        Innerhalb der Toleranz:
+                      </h3>
+                      <p className="text-gray-600">
+                        {isResponse.vpi_validation.within_tolerance
+                          ? "Ja"
+                          : "Nein"}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Richtwert Validation */}
-              <div className="w-[90%] mx-auto mt-8">
-                <h1 className="text-gray-800 text-2xl lg:text-4xl my-10 font-bold">Richtwertvalidierung</h1>
-                <div className="flex flex-wrap justify-between items-center gap-5">
-                  <div className="flex w-full lg:w-[45%] flex-col lg:flex-row justify-start items-start lg:items-center gap-2.5 border border-gray-300 rounded-lg p-2">
-                    <h3 className="text-2xl font-semibold text-gray-800">anwendbar:</h3>
-                    <p>{isResponse?.richtwert_validation?.applicable === true ? "true" : "false"}</p>
-                  </div>
-                  <div className="flex w-full lg:w-[45%] flex-col lg:flex-row justify-start items-start lg:items-center gap-2.5 border border-gray-300 rounded-lg p-2">
-                    <h3 className="text-2xl font-semibold text-gray-800">Höchstmiete erlaubt:</h3>
-                    <p>{isResponse?.richtwert_validation?.max_rent_allowed}</p>
-                  </div>
-                  <div className="flex w-full lg:w-[45%] flex-col lg:flex-row justify-start items-start lg:items-center gap-2.5 border border-gray-300 rounded-lg p-2">
-                    <h3 className="text-2xl font-semibold text-gray-800">gültig:</h3>
-                    <p>{isResponse?.richtwert_validation?.valid}</p>
-                  </div>
-                  <div className="flex w-full lg:w-[45%] flex-col justify-start items-start gap-2.5 border border-gray-300 rounded-lg p-2">
-                    <h3 className="text-2xl font-semibold text-gray-800">Kommentar:</h3>
-                    <p>{isResponse?.richtwert_validation?.comment}</p>
-                  </div>
-                  <div className="flex w-full lg:w-[45%] flex-col lg:flex-row justify-start items-start lg:items-center gap-2.5 border border-gray-300 rounded-lg p-2">
-                    <h3 className="text-2xl font-semibold text-gray-800">Aktuelle Miete:</h3>
-                    <p>{isResponse?.richtwert_validation?.current_rent}</p>
-                  </div>
-                  <div className="flex w-full lg:w-[45%] flex-col lg:flex-row justify-start items-start lg:items-center gap-2.5 border border-gray-300 rounded-lg p-2">
-                    <h3 className="text-2xl font-semibold text-gray-800">Überschussbetrag:</h3>
-                    <p>{isResponse?.richtwert_validation?.excess_amount}</p>
-                  </div>
-                  <div className="flex w-full lg:w-[45%] flex-col lg:flex-row justify-start items-start lg:items-center gap-2.5 border border-gray-300 rounded-lg p-2">
-                    <h3 className="text-2xl font-semibold text-gray-800">Überschussprozent:</h3>
-                    <p>{isResponse?.richtwert_validation?.excess_percent}</p>
-                  </div>
+              <div className="w-full max-w-6xl mx-auto mt-12 px-4">
+                <h1 className="text-gray-800 text-2xl lg:text-3xl my-10 font-bold">
+                  Richtwertvalidierung
+                </h1>
+
+                <div className="flex flex-wrap gap-4">
+                  {isResponse?.richtwert_validation?.applicable !==
+                    undefined && (
+                    <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                        Anwendbar:
+                      </h3>
+                      <p className="text-gray-600">
+                        {isResponse.richtwert_validation.applicable
+                          ? "Ja"
+                          : "Nein"}
+                      </p>
+                    </div>
+                  )}
+
+                  {isResponse?.richtwert_validation?.max_rent_allowed !==
+                    undefined &&
+                    isResponse.richtwert_validation.max_rent_allowed !== 0 && (
+                      <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                          Höchstmiete erlaubt:
+                        </h3>
+                        <p className="text-gray-600">
+                          {isResponse.richtwert_validation.max_rent_allowed}
+                        </p>
+                      </div>
+                    )}
+
+                  {isResponse?.richtwert_validation?.valid !== undefined && (
+                    <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                        Gültig:
+                      </h3>
+                      <p className="text-gray-600">
+                        {isResponse.richtwert_validation.valid ? "Ja" : "Nein"}
+                      </p>
+                    </div>
+                  )}
+
+                  {isResponse?.richtwert_validation?.comment && (
+                    <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                        Kommentar:
+                      </h3>
+                      <p className="text-gray-600">
+                        {isResponse.richtwert_validation.comment}
+                      </p>
+                    </div>
+                  )}
+
+                  {isResponse?.richtwert_validation?.current_rent !==
+                    undefined &&
+                    isResponse.richtwert_validation.current_rent !== 0 && (
+                      <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                          Aktuelle Miete:
+                        </h3>
+                        <p className="text-gray-600">
+                          {isResponse.richtwert_validation.current_rent}
+                        </p>
+                      </div>
+                    )}
+
+                  {isResponse?.richtwert_validation?.excess_amount !==
+                    undefined &&
+                    isResponse.richtwert_validation.excess_amount !== 0 && (
+                      <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                          Überschussbetrag:
+                        </h3>
+                        <p className="text-gray-600">
+                          {isResponse.richtwert_validation.excess_amount}
+                        </p>
+                      </div>
+                    )}
+
+                  {isResponse?.richtwert_validation?.excess_percent !==
+                    undefined &&
+                    isResponse.richtwert_validation.excess_percent !== 0 && (
+                      <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                          Überschussprozent:
+                        </h3>
+                        <p className="text-gray-600">
+                          {isResponse.richtwert_validation.excess_percent}
+                        </p>
+                      </div>
+                    )}
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="w-[90%] lg:w-[90%] my-10 mx-auto flex flex-col lg:flex-row justify-center gap-10 items-center">
                 <Button
                   className="h-[50px] w-[80%] md:w-[40%] lg:w-[30%] bg-[#186DEE] text-white border-none rounded-md outline-none hover:bg-[#1557c7] transition-colors duration-300 transform hover:scale-105"
@@ -703,7 +992,8 @@ const Score = () => {
 
               <div className="w-[90%] my-10 lg:w-[90%] mx-auto">
                 <p className="text-[18px] w-full lg:w-[50%] mx-auto text-[#CACBCB] text-center">
-                  Dieses Tool ersetzt keine Rechtsberatung. Alle Angaben ohne Gewähr.
+                  Dieses Tool ersetzt keine Rechtsberatung. Alle Angaben ohne
+                  Gewähr.
                 </p>
               </div>
             </div>
@@ -711,7 +1001,7 @@ const Score = () => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Score
+export default Score;
