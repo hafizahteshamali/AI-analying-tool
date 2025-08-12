@@ -690,11 +690,23 @@ const Score = () => {
               </div>
 
               <div className="w-full max-w-6xl mx-auto mt-8 px-4">
-                <h1 className="text-gray-800 my-10 text-2xl lg:text-3xl font-bold">
+                <h1 className="text-gray-800 my-10 text-xl sm:text-2xl lg:text-3xl font-bold bg-amber-400">
                   Analyse der Indexierungsklausel
                 </h1>
 
                 <div className="flex flex-wrap gap-4">
+
+                {isResponse?.indexation_clause_analysis?.clause_text && (
+                    <div className="w-full bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                        Klauseltext:
+                      </h3>
+                      <p className="text-gray-600 whitespace-pre-line">
+                        {isResponse.indexation_clause_analysis.clause_text}
+                      </p>
+                    </div>
+                  )}
+
                   {isResponse?.indexation_clause_analysis?.index_name && (
                     <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                       <h3 className="text-lg font-semibold text-gray-700 mb-2">
@@ -767,7 +779,7 @@ const Score = () => {
               </div>
 
               <div className="w-full max-w-6xl mx-auto mt-12 px-4">
-                <h1 className="text-gray-800 text-2xl lg:text-3xl my-10 font-bold">
+                <h1 className="text-gray-800 text-xl sm:text-2xl lg:text-3xl my-10 font-bold">
                   VPI-Validierung
                 </h1>
 
@@ -873,7 +885,7 @@ const Score = () => {
               </div>
 
               <div className="w-full max-w-6xl mx-auto mt-12 px-4">
-                <h1 className="text-gray-800 text-2xl lg:text-3xl my-10 font-bold">
+                <h1 className="text-gray-800 text-xl sm:text-2xl lg:text-3xl my-10 font-bold">
                   Richtwertvalidierung
                 </h1>
 
