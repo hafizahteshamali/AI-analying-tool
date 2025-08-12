@@ -689,20 +689,20 @@ const Score = () => {
                 </div>
               </div>
 
-              <div className="w-full max-w-6xl mx-auto mt-8 px-4">
-                <h1 className="text-gray-800 my-10 text-xl sm:text-2xl lg:text-3xl font-bold bg-amber-400">
+              <div className="w-[100%] lg:w-[90%] mx-auto mt-8">
+                <h1 className="text-gray-800 my-10 text-xl sm:text-2xl lg:text-3xl font-bold">
                   Analyse der Indexierungsklausel
                 </h1>
 
                 <div className="flex flex-wrap gap-4">
 
-                {isResponse?.indexation_clause_analysis?.clause_text && (
+                {isResponse?.indexation_clause_analysis?.llm_generated_summary && (
                     <div className="w-full bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                       <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                        Klauseltext:
+                      Ergebnis:
                       </h3>
                       <p className="text-gray-600 whitespace-pre-line">
-                        {isResponse.indexation_clause_analysis.clause_text}
+                        {isResponse.indexation_clause_analysis.llm_generated_summary}
                       </p>
                     </div>
                   )}
@@ -765,7 +765,7 @@ const Score = () => {
                     </div>
                   )}
 
-                  {isResponse?.indexation_clause_analysis?.clause_text && (
+                  {/* {isResponse?.indexation_clause_analysis?.clause_text && (
                     <div className="w-full bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                       <h3 className="text-lg font-semibold text-gray-700 mb-2">
                         Klauseltext:
@@ -774,16 +774,28 @@ const Score = () => {
                         {isResponse.indexation_clause_analysis.clause_text}
                       </p>
                     </div>
-                  )}
+                  )} */}
                 </div>
               </div>
 
-              <div className="w-full max-w-6xl mx-auto mt-12 px-4">
+              <div className="w-[100%] lg:w-[90%] mx-auto mt-12">
                 <h1 className="text-gray-800 text-xl sm:text-2xl lg:text-3xl my-10 font-bold">
                   VPI-Validierung
                 </h1>
 
                 <div className="flex flex-wrap gap-4">
+
+                {isResponse?.vpi_validation?.llm_generated_summary && (
+                    <div className="w-full bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                      Ergebnis:
+                      </h3>
+                      <p className="text-gray-600 whitespace-pre-line">
+                        {isResponse.vpi_validation.llm_generated_summary}
+                      </p>
+                    </div>
+                  )}
+
                   {isResponse?.vpi_validation?.comment && (
                     <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                       <h3 className="text-lg font-semibold text-gray-700 mb-2">
@@ -884,12 +896,24 @@ const Score = () => {
                 </div>
               </div>
 
-              <div className="w-full max-w-6xl mx-auto mt-12 px-4">
+              <div className="w-[100%] lg:w-[90%] mx-auto mt-12">
                 <h1 className="text-gray-800 text-xl sm:text-2xl lg:text-3xl my-10 font-bold">
                   Richtwertvalidierung
                 </h1>
 
                 <div className="flex flex-wrap gap-4">
+
+                {isResponse?.richtwert_validation?.llm_generated_summary && (
+                    <div className="w-full bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                      Ergebnis:
+                      </h3>
+                      <p className="text-gray-600 whitespace-pre-line">
+                        {isResponse.richtwert_validation.llm_generated_summary}
+                      </p>
+                    </div>
+                  )}
+
                   {isResponse?.richtwert_validation?.applicable !==
                     undefined && (
                     <div className="flex-1 min-w-[250px] bg-white p-4 rounded-lg shadow-sm border border-gray-200">
@@ -977,6 +1001,26 @@ const Score = () => {
                         </p>
                       </div>
                     )}
+                </div>
+              </div>
+
+              <div className="w-[100%] lg:w-[90%] mx-auto mt-12">
+                <h1 className="text-gray-800 text-xl sm:text-2xl lg:text-3xl my-10 font-bold">
+                Detailergebnis
+                </h1>
+
+                <div className="flex flex-wrap gap-4">
+
+                {isResponse?.summary_comment && (
+                    <div className="w-full bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                      Zusammenfassung:
+                      </h3>
+                      <p className="text-gray-600 whitespace-pre-line">
+                        {isResponse.summary_comment}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
