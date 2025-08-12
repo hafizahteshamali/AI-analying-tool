@@ -1004,7 +1004,7 @@ const Score = () => {
                 </div>
               </div>
 
-              <div className="w-[100%] lg:w-[90%] mx-auto mt-12">
+              <div className="w-[100%] lg:w-[90%] mx-auto mt-11">
                 <h1 className="text-gray-800 text-xl sm:text-2xl lg:text-3xl my-10 font-bold">
                 Detailergebnis
                 </h1>
