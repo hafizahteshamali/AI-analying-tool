@@ -215,7 +215,7 @@ const Score = () => {
 
   return (
     <div className="w-full">
-      <div className="bg-[#132438] flex flex-col items-center justify-start py-10 px-4">
+      <div className="flex flex-col items-center justify-start py-10 px-4 bg-cover bg-no-repeat" style={{backgroundImage: `url('/assets/images/Home/91f9a02e505608b63232bced65db51627f7e99cf.jpg')`}}>
         <div className="container mx-auto min-h-[500px]">
           <Header />
           <div className="text-center h-[300px] my-[50px] flex flex-col justify-center items-center">
