@@ -32,7 +32,7 @@ const Score = () => {
   const [showAnimation, setShowAnimation] = useState(false);
   const [isStructureResponse, setIsStructureResponse] = useState();
   const navigate = useNavigate();
-  const [activeTooltips, setActiveTooltips] = useState({});
+  const [activeTooltip, setActiveTooltip] = useState(null);
   const [isSources, setIsSources] = useState(false);
 
   useEffect(() => {
@@ -626,244 +626,228 @@ const Score = () => {
                   Klauselbewertung
                 </h1>
                 <div className="w-[100%] my-4 border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-                {/* 🔹 Illegal Section */}
-{isIllegal.length > 0 && (
-  <div className="flex justify-between items-center bg-white p-4 hover:bg-gray-50 transition-colors duration-200">
-    <div className="w-[70%]">
-      <ul>
-        {isIllegal.map((ill, illIndex) => (
-          <li key={illIndex} className="mb-3">
-            <span className="text-sm">{ill.clause} </span>
 
-            {ill.legal_sources.slice(0, 1).map((item, sourceIndex) => {
-              const tooltipKey = `ill-${illIndex}-${sourceIndex}`;
-              return (
-                <div key={sourceIndex} className="relative inline-block">
-                  {/* Toggle Button */}
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setActiveTooltips((prev) => ({
-                        ...prev,
-                        [tooltipKey]: !prev[tooltipKey],
-                      }));
-                    }}
-                    className="text-gray-500 text-[10px] ml-1 cursor-pointer"
-                  >
-                    (Sources...)
-                  </button>
+  {/* 🔹 Illegal Section */}
+  {isIllegal.length > 0 && (
+    <div className="flex justify-between items-center bg-white p-4 hover:bg-gray-50 transition-colors duration-200">
+      <div className="w-[70%]">
+        <ul>
+          {isIllegal.map((ill, illIndex) => {
+            const randomIndex = Math.floor(Math.random() * ill.legal_sources.length);
+            const randomItem = ill.legal_sources[randomIndex];
+            const tooltipKey = `illegal-${illIndex}`;
 
-                  {/* Tooltip */}
-                  {activeTooltips[tooltipKey] && (
-                    <div
-                      className="absolute left-0 bg-white border border-gray-200 p-3 rounded shadow-lg z-10"
-                      style={{
-                        minWidth: "250px",
-                        [illIndex === 0 ? "top" : "bottom"]: "100%",
-                        [illIndex === 0 ? "marginTop" : "marginBottom"]: "0.5rem",
+            return (
+              <li key={illIndex} className="mb-3">
+                <span className="text-sm">{ill.clause} </span>
+
+                {randomItem && (
+                  <div className="relative inline-block">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTooltip(activeTooltip === tooltipKey ? null : tooltipKey);
                       }}
+                      className="text-gray-500 text-[10px] ml-1 cursor-pointer"
                     >
-                      <p className="text-xs text-black">Law Name: {item.law_name}</p>
-                      <p className="text-xs mt-1 text-black">Reference: {item.reference}</p>
-                      <p className="text-xs mt-1 text-black">Description: {item.description}</p>
+                      (Sources...)
+                    </button>
 
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block mt-2 text-blue-500 text-xs font-medium"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        Visit Source →
-                      </a>
-
-                      {/* Close Button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveTooltips((prev) => ({
-                            ...prev,
-                            [tooltipKey]: false,
-                          }));
+                    {activeTooltip === tooltipKey && (
+                      <div
+                        className="absolute left-0 bg-white border border-gray-200 p-3 rounded shadow-lg z-10"
+                        style={{
+                          minWidth: "250px",
+                          [illIndex === 0 ? "top" : "bottom"]: "100%",
+                          [illIndex === 0 ? "marginTop" : "marginBottom"]: "0.5rem",
                         }}
-                        className="absolute top-1 right-1 text-gray-400 hover:text-gray-600"
                       >
-                        ×
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </li>
-        ))}
-      </ul>
+                        <p className="text-xs text-black">Law Name: {randomItem.law_name}</p>
+                        <p className="text-xs mt-1 text-black">Reference: {randomItem.reference}</p>
+                        <p className="text-xs mt-1 text-black">Description: {randomItem.description}</p>
+
+                        <a
+                          href={randomItem.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block mt-2 text-blue-500 text-xs font-medium"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          Visit Source →
+                        </a>
+
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveTooltip(null);
+                          }}
+                          className="absolute top-1 right-1 text-gray-400 hover:text-gray-600"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+      <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-medium">
+        Illegal
+      </span>
     </div>
-    <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-medium">
-      Illegal
-    </span>
-  </div>
-)}
+  )}
 
-{/* 🔹 Questionable Section */}
-{isQuestionable.length > 0 && (
-  <div className="flex justify-between items-center bg-white p-4 hover:bg-gray-50 transition-colors duration-200">
-    <div className="w-[70%]">
-      <ul>
-        {isQuestionable.map((que, queIndex) => (
-          <li key={queIndex} className="mb-3">
-            <span className="text-sm">{que.clause} </span>
+  {/* 🔹 Questionable Section */}
+  {isQuestionable.length > 0 && (
+    <div className="flex justify-between items-center bg-white p-4 hover:bg-gray-50 transition-colors duration-200">
+      <div className="w-[70%]">
+        <ul>
+          {isQuestionable.map((que, queIndex) => {
+            const randomIndex = Math.floor(Math.random() * que.legal_sources.length);
+            const randomItem = que.legal_sources[randomIndex];
+            const tooltipKey = `ques-${queIndex}`;
 
-            {que.legal_sources.slice(0, 1).map((item, sourceIndex) => {
-              const tooltipKey = `ques-${queIndex}-${sourceIndex}`;
-              return (
-                <div key={sourceIndex} className="relative inline-block">
-                  {/* Toggle Button */}
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setActiveTooltips((prev) => ({
-                        ...prev,
-                        [tooltipKey]: !prev[tooltipKey],
-                      }));
-                    }}
-                    className="text-gray-500 text-[10px] ml-1 cursor-pointer"
-                  >
-                    (Sources...)
-                  </button>
+            return (
+              <li key={queIndex} className="mb-3">
+                <span className="text-sm">{que.clause} </span>
 
-                  {/* Tooltip */}
-                  {activeTooltips[tooltipKey] && (
-                    <div
-                      className="absolute left-0 bg-white border border-gray-200 p-3 rounded shadow-lg z-10"
-                      style={{
-                        minWidth: "250px",
-                        [queIndex === 0 ? "top" : "bottom"]: "100%",
-                        [queIndex === 0 ? "marginTop" : "marginBottom"]: "0.5rem",
+                {randomItem && (
+                  <div className="relative inline-block">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTooltip(activeTooltip === tooltipKey ? null : tooltipKey);
                       }}
+                      className="text-gray-500 text-[10px] ml-1 cursor-pointer"
                     >
-                      <p className="text-xs text-black">Law Name: {item.law_name}</p>
-                      <p className="text-xs mt-1 text-black">Reference: {item.reference}</p>
-                      <p className="text-xs mt-1 text-black">Description: {item.description}</p>
+                      (Sources...)
+                    </button>
 
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block mt-2 text-blue-500 text-xs font-medium"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        Visit Source →
-                      </a>
-
-                      {/* Close Button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveTooltips((prev) => ({
-                            ...prev,
-                            [tooltipKey]: false,
-                          }));
+                    {activeTooltip === tooltipKey && (
+                      <div
+                        className="absolute left-0 bg-white border border-gray-200 p-3 rounded shadow-lg z-10"
+                        style={{
+                          minWidth: "250px",
+                          [queIndex === 0 ? "top" : "bottom"]: "100%",
+                          [queIndex === 0 ? "marginTop" : "marginBottom"]: "0.5rem",
                         }}
-                        className="absolute top-1 right-1 text-gray-400 hover:text-gray-600"
                       >
-                        ×
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </li>
-        ))}
-      </ul>
+                        <p className="text-xs text-black">Law Name: {randomItem.law_name}</p>
+                        <p className="text-xs mt-1 text-black">Reference: {randomItem.reference}</p>
+                        <p className="text-xs mt-1 text-black">Description: {randomItem.description}</p>
+
+                        <a
+                          href={randomItem.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block mt-2 text-blue-500 text-xs font-medium"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          Visit Source →
+                        </a>
+
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveTooltip(null);
+                          }}
+                          className="absolute top-1 right-1 text-gray-400 hover:text-gray-600"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+      <span className="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-sm font-medium">
+        Questionable
+      </span>
     </div>
-    <span className="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-sm font-medium">
-      Questionable
-    </span>
-  </div>
-)}
+  )}
 
-{/* 🔹 Legal Section */}
-{islegal.length > 0 && (
-  <div className="flex justify-between items-center bg-white p-4 hover:bg-gray-50 transition-colors duration-200">
-    <div className="w-[70%]">
-      <ul>
-        {islegal.map((leg, legIndex) => (
-          <li key={legIndex} className="mb-3">
-            <span className="text-sm">{leg.clause} </span>
+  {/* 🔹 Legal Section */}
+  {islegal.length > 0 && (
+    <div className="flex justify-between items-center bg-white p-4 hover:bg-gray-50 transition-colors duration-200">
+      <div className="w-[70%]">
+        <ul>
+          {islegal.map((leg, legIndex) => {
+            const randomIndex = Math.floor(Math.random() * leg.legal_sources.length);
+            const randomItem = leg.legal_sources[randomIndex];
+            const tooltipKey = `leg-${legIndex}`;
 
-            {leg.legal_sources.slice(0, 1).map((item, sourceIndex) => {
-              const tooltipKey = `leg-${legIndex}-${sourceIndex}`;
-              return (
-                <div key={sourceIndex} className="relative inline-block">
-                  {/* Toggle Button */}
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setActiveTooltips((prev) => ({
-                        ...prev,
-                        [tooltipKey]: !prev[tooltipKey],
-                      }));
-                    }}
-                    className="text-gray-500 text-[10px] ml-1 cursor-pointer"
-                  >
-                    (Sources...)
-                  </button>
+            return (
+              <li key={legIndex} className="mb-3">
+                <span className="text-sm">{leg.clause} </span>
 
-                  {/* Tooltip */}
-                  {activeTooltips[tooltipKey] && (
-                    <div
-                      className="absolute left-0 bg-white border border-gray-200 p-3 rounded shadow-lg z-10"
-                      style={{
-                        minWidth: "250px",
-                        [legIndex === 0 ? "top" : "bottom"]: "100%",
-                        [legIndex === 0 ? "marginTop" : "marginBottom"]: "0.5rem",
+                {randomItem && (
+                  <div className="relative inline-block">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTooltip(activeTooltip === tooltipKey ? null : tooltipKey);
                       }}
+                      className="text-gray-500 text-[10px] ml-1 cursor-pointer"
                     >
-                      <p className="text-xs text-black">Law Name: {item.law_name}</p>
-                      <p className="text-xs mt-1 text-black">Reference: {item.reference}</p>
-                      <p className="text-xs mt-1 text-black">Description: {item.description}</p>
+                      (Sources...)
+                    </button>
 
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block mt-2 text-blue-500 text-xs font-medium"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        Visit Source →
-                      </a>
-
-                      {/* Close Button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveTooltips((prev) => ({
-                            ...prev,
-                            [tooltipKey]: false,
-                          }));
+                    {activeTooltip === tooltipKey && (
+                      <div
+                        className="absolute left-0 bg-white border border-gray-200 p-3 rounded shadow-lg z-10"
+                        style={{
+                          minWidth: "250px",
+                          [legIndex === 0 ? "top" : "bottom"]: "100%",
+                          [legIndex === 0 ? "marginTop" : "marginBottom"]: "0.5rem",
                         }}
-                        className="absolute top-1 right-1 text-gray-400 hover:text-gray-600"
                       >
-                        ×
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </li>
-        ))}
-      </ul>
-    </div>
-    <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm font-medium">
-      Legal
-    </span>
-  </div>
-)}
+                        <p className="text-xs text-black">Law Name: {randomItem.law_name}</p>
+                        <p className="text-xs mt-1 text-black">Reference: {randomItem.reference}</p>
+                        <p className="text-xs mt-1 text-black">Description: {randomItem.description}</p>
 
-                </div>
+                        <a
+                          href={randomItem.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block mt-2 text-blue-500 text-xs font-medium"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          Visit Source →
+                        </a>
+
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveTooltip(null);
+                          }}
+                          className="absolute top-1 right-1 text-gray-400 hover:text-gray-600"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+      <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm font-medium">
+        Legal
+      </span>
+    </div>
+  )}
+
+</div>
+
               </div>
 
               <div className="w-[100%] lg:w-[90%] mx-auto mt-8">
