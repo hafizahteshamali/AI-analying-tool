@@ -650,7 +650,7 @@ const Score = () => {
                       }}
                       className="text-gray-500 text-[10px] ml-1 cursor-pointer"
                     >
-                      (Sources...)
+                      (Quellen...)
                     </button>
 
                     {activeTooltip === tooltipKey && (
@@ -662,9 +662,9 @@ const Score = () => {
                           [illIndex === 0 ? "marginTop" : "marginBottom"]: "0.5rem",
                         }}
                       >
-                        <p className="text-xs text-black">Law Name: {randomItem.law_name}</p>
-                        <p className="text-xs mt-1 text-black">Reference: {randomItem.reference}</p>
-                        <p className="text-xs mt-1 text-black">Description: {randomItem.description}</p>
+                        <p className="text-xs text-black">Rechtsname: {randomItem.law_name}</p>
+                        <p className="text-xs mt-1 text-black">Referenz: {randomItem.reference}</p>
+                        <p className="text-xs mt-1 text-black">Beschreibung: {randomItem.description}</p>
 
                         <a
                           href={randomItem.url}
@@ -673,7 +673,7 @@ const Score = () => {
                           className="block mt-2 text-blue-500 text-xs font-medium"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          Visit Source →
+                          Quelle besuchen →
                         </a>
 
                         <button
@@ -723,7 +723,7 @@ const Score = () => {
                       }}
                       className="text-gray-500 text-[10px] ml-1 cursor-pointer"
                     >
-                      (Sources...)
+                      (Quellen...)
                     </button>
 
                     {activeTooltip === tooltipKey && (
@@ -735,9 +735,9 @@ const Score = () => {
                           [queIndex === 0 ? "marginTop" : "marginBottom"]: "0.5rem",
                         }}
                       >
-                        <p className="text-xs text-black">Law Name: {randomItem.law_name}</p>
-                        <p className="text-xs mt-1 text-black">Reference: {randomItem.reference}</p>
-                        <p className="text-xs mt-1 text-black">Description: {randomItem.description}</p>
+                        <p className="text-xs text-black">Rechtsname: {randomItem.law_name}</p>
+                        <p className="text-xs mt-1 text-black">Referenz: {randomItem.reference}</p>
+                        <p className="text-xs mt-1 text-black">Beschreibung: {randomItem.description}</p>
 
                         <a
                           href={randomItem.url}
@@ -746,7 +746,7 @@ const Score = () => {
                           className="block mt-2 text-blue-500 text-xs font-medium"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          Visit Source →
+                          Quelle besuchen →
                         </a>
 
                         <button
@@ -796,7 +796,7 @@ const Score = () => {
                       }}
                       className="text-gray-500 text-[10px] ml-1 cursor-pointer"
                     >
-                      (Sources...)
+                      (Quellen...)
                     </button>
 
                     {activeTooltip === tooltipKey && (
@@ -808,9 +808,9 @@ const Score = () => {
                           [legIndex === 0 ? "marginTop" : "marginBottom"]: "0.5rem",
                         }}
                       >
-                        <p className="text-xs text-black">Law Name: {randomItem.law_name}</p>
-                        <p className="text-xs mt-1 text-black">Reference: {randomItem.reference}</p>
-                        <p className="text-xs mt-1 text-black">Description: {randomItem.description}</p>
+                        <p className="text-xs text-black">Rechtsname: {randomItem.law_name}</p>
+                        <p className="text-xs mt-1 text-black">Referenz: {randomItem.reference}</p>
+                        <p className="text-xs mt-1 text-black">Beschreibung: {randomItem.description}</p>
 
                         <a
                           href={randomItem.url}
@@ -819,7 +819,7 @@ const Score = () => {
                           className="block mt-2 text-blue-500 text-xs font-medium"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          Visit Source →
+                          Quelle besuchen →
                         </a>
 
                         <button
