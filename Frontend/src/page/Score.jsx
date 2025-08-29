@@ -32,6 +32,8 @@ const Score = () => {
   const [showAnimation, setShowAnimation] = useState(false);
   const [isStructureResponse, setIsStructureResponse] = useState();
   const navigate = useNavigate();
+  const [activeTooltips, setActiveTooltips] = useState({});
+  const [isSources, setIsSources] = useState(false);
 
   useEffect(() => {
     const token = sessionStorage.getItem("loginToken");
@@ -213,9 +215,22 @@ const Score = () => {
 
   if (!isAllowed) return null;
 
+  const SourcesShow = () => {
+    setIsSources(true);
+  };
+
+  const RemoveSource = () => {
+    setIsSources(false);
+  };
+
   return (
     <div className="w-full">
-      <div className="flex flex-col items-center justify-start py-10 px-4 bg-cover bg-no-repeat" style={{backgroundImage: `url('/assets/images/Home/91f9a02e505608b63232bced65db51627f7e99cf.jpg')`}}>
+      <div
+        className="flex flex-col items-center justify-start py-10 px-4 bg-cover bg-no-repeat"
+        style={{
+          backgroundImage: `url('/assets/images/Home/91f9a02e505608b63232bced65db51627f7e99cf.jpg')`,
+        }}
+      >
         <div className="container mx-auto min-h-[500px]">
           <Header />
           <div className="text-center h-[300px] my-[50px] flex flex-col justify-center items-center">
@@ -611,48 +626,243 @@ const Score = () => {
                   Klauselbewertung
                 </h1>
                 <div className="w-[100%] my-4 border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-                  {isIllegal.length > 0 && (
-                    <div className="flex justify-between items-center bg-white p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200">
-                      <div className="w-[70%]">
-                        {isIllegal.map((ill, index) => (
-                          <p key={index} className="text-gray-800 mb-2">
-                            {ill}
-                          </p>
-                        ))}
-                      </div>
-                      <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-medium">
-                        illegal
-                      </span>
+                {/* 🔹 Illegal Section */}
+{isIllegal.length > 0 && (
+  <div className="flex justify-between items-center bg-white p-4 hover:bg-gray-50 transition-colors duration-200">
+    <div className="w-[70%]">
+      <ul>
+        {isIllegal.map((ill, illIndex) => (
+          <li key={illIndex} className="mb-3">
+            <span className="text-sm">{ill.clause} </span>
+
+            {ill.legal_sources.slice(0, 1).map((item, sourceIndex) => {
+              const tooltipKey = `ill-${illIndex}-${sourceIndex}`;
+              return (
+                <div key={sourceIndex} className="relative inline-block">
+                  {/* Toggle Button */}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveTooltips((prev) => ({
+                        ...prev,
+                        [tooltipKey]: !prev[tooltipKey],
+                      }));
+                    }}
+                    className="text-gray-500 text-[10px] ml-1 cursor-pointer"
+                  >
+                    (Sources...)
+                  </button>
+
+                  {/* Tooltip */}
+                  {activeTooltips[tooltipKey] && (
+                    <div
+                      className="absolute left-0 bg-white border border-gray-200 p-3 rounded shadow-lg z-10"
+                      style={{
+                        minWidth: "250px",
+                        [illIndex === 0 ? "top" : "bottom"]: "100%",
+                        [illIndex === 0 ? "marginTop" : "marginBottom"]: "0.5rem",
+                      }}
+                    >
+                      <p className="text-xs text-black">Law Name: {item.law_name}</p>
+                      <p className="text-xs mt-1 text-black">Reference: {item.reference}</p>
+                      <p className="text-xs mt-1 text-black">Description: {item.description}</p>
+
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block mt-2 text-blue-500 text-xs font-medium"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Visit Source →
+                      </a>
+
+                      {/* Close Button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveTooltips((prev) => ({
+                            ...prev,
+                            [tooltipKey]: false,
+                          }));
+                        }}
+                        className="absolute top-1 right-1 text-gray-400 hover:text-gray-600"
+                      >
+                        ×
+                      </button>
                     </div>
                   )}
-                  {isQuestionable.length > 0 && (
-                    <div className="flex justify-between items-center bg-white p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200">
-                      <div className="w-[70%]">
-                        {isQuestionable.map((ques, index) => (
-                          <p key={index} className="text-gray-800 mb-2">
-                            {ques}
-                          </p>
-                        ))}
-                      </div>
-                      <span className="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-sm font-medium">
-                        Fragwürdig
-                      </span>
+                </div>
+              );
+            })}
+          </li>
+        ))}
+      </ul>
+    </div>
+    <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-medium">
+      Illegal
+    </span>
+  </div>
+)}
+
+{/* 🔹 Questionable Section */}
+{isQuestionable.length > 0 && (
+  <div className="flex justify-between items-center bg-white p-4 hover:bg-gray-50 transition-colors duration-200">
+    <div className="w-[70%]">
+      <ul>
+        {isQuestionable.map((que, queIndex) => (
+          <li key={queIndex} className="mb-3">
+            <span className="text-sm">{que.clause} </span>
+
+            {que.legal_sources.slice(0, 1).map((item, sourceIndex) => {
+              const tooltipKey = `ques-${queIndex}-${sourceIndex}`;
+              return (
+                <div key={sourceIndex} className="relative inline-block">
+                  {/* Toggle Button */}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveTooltips((prev) => ({
+                        ...prev,
+                        [tooltipKey]: !prev[tooltipKey],
+                      }));
+                    }}
+                    className="text-gray-500 text-[10px] ml-1 cursor-pointer"
+                  >
+                    (Sources...)
+                  </button>
+
+                  {/* Tooltip */}
+                  {activeTooltips[tooltipKey] && (
+                    <div
+                      className="absolute left-0 bg-white border border-gray-200 p-3 rounded shadow-lg z-10"
+                      style={{
+                        minWidth: "250px",
+                        [queIndex === 0 ? "top" : "bottom"]: "100%",
+                        [queIndex === 0 ? "marginTop" : "marginBottom"]: "0.5rem",
+                      }}
+                    >
+                      <p className="text-xs text-black">Law Name: {item.law_name}</p>
+                      <p className="text-xs mt-1 text-black">Reference: {item.reference}</p>
+                      <p className="text-xs mt-1 text-black">Description: {item.description}</p>
+
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block mt-2 text-blue-500 text-xs font-medium"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Visit Source →
+                      </a>
+
+                      {/* Close Button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveTooltips((prev) => ({
+                            ...prev,
+                            [tooltipKey]: false,
+                          }));
+                        }}
+                        className="absolute top-1 right-1 text-gray-400 hover:text-gray-600"
+                      >
+                        ×
+                      </button>
                     </div>
                   )}
-                  {islegal.length > 0 && (
-                    <div className="flex justify-between items-center bg-white p-4 hover:bg-gray-50 transition-colors duration-200">
-                      <div className="w-[70%]">
-                        {islegal.map((leg, index) => (
-                          <p key={index} className="text-gray-800 mb-2">
-                            {leg}
-                          </p>
-                        ))}
-                      </div>
-                      <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm font-medium">
-                        legal
-                      </span>
+                </div>
+              );
+            })}
+          </li>
+        ))}
+      </ul>
+    </div>
+    <span className="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-sm font-medium">
+      Questionable
+    </span>
+  </div>
+)}
+
+{/* 🔹 Legal Section */}
+{islegal.length > 0 && (
+  <div className="flex justify-between items-center bg-white p-4 hover:bg-gray-50 transition-colors duration-200">
+    <div className="w-[70%]">
+      <ul>
+        {islegal.map((leg, legIndex) => (
+          <li key={legIndex} className="mb-3">
+            <span className="text-sm">{leg.clause} </span>
+
+            {leg.legal_sources.slice(0, 1).map((item, sourceIndex) => {
+              const tooltipKey = `leg-${legIndex}-${sourceIndex}`;
+              return (
+                <div key={sourceIndex} className="relative inline-block">
+                  {/* Toggle Button */}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveTooltips((prev) => ({
+                        ...prev,
+                        [tooltipKey]: !prev[tooltipKey],
+                      }));
+                    }}
+                    className="text-gray-500 text-[10px] ml-1 cursor-pointer"
+                  >
+                    (Sources...)
+                  </button>
+
+                  {/* Tooltip */}
+                  {activeTooltips[tooltipKey] && (
+                    <div
+                      className="absolute left-0 bg-white border border-gray-200 p-3 rounded shadow-lg z-10"
+                      style={{
+                        minWidth: "250px",
+                        [legIndex === 0 ? "top" : "bottom"]: "100%",
+                        [legIndex === 0 ? "marginTop" : "marginBottom"]: "0.5rem",
+                      }}
+                    >
+                      <p className="text-xs text-black">Law Name: {item.law_name}</p>
+                      <p className="text-xs mt-1 text-black">Reference: {item.reference}</p>
+                      <p className="text-xs mt-1 text-black">Description: {item.description}</p>
+
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block mt-2 text-blue-500 text-xs font-medium"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Visit Source →
+                      </a>
+
+                      {/* Close Button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveTooltips((prev) => ({
+                            ...prev,
+                            [tooltipKey]: false,
+                          }));
+                        }}
+                        className="absolute top-1 right-1 text-gray-400 hover:text-gray-600"
+                      >
+                        ×
+                      </button>
                     </div>
                   )}
+                </div>
+              );
+            })}
+          </li>
+        ))}
+      </ul>
+    </div>
+    <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm font-medium">
+      Legal
+    </span>
+  </div>
+)}
+
                 </div>
               </div>
 
@@ -695,14 +905,17 @@ const Score = () => {
                 </h1>
 
                 <div className="flex flex-wrap gap-4">
-
-                {isResponse?.indexation_clause_analysis?.llm_generated_summary && (
+                  {isResponse?.indexation_clause_analysis
+                    ?.llm_generated_summary && (
                     <div className="w-full bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                       <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                      Ergebnis:
+                        Ergebnis:
                       </h3>
                       <p className="text-gray-600 whitespace-pre-line">
-                        {isResponse.indexation_clause_analysis.llm_generated_summary}
+                        {
+                          isResponse.indexation_clause_analysis
+                            .llm_generated_summary
+                        }
                       </p>
                     </div>
                   )}
@@ -764,17 +977,6 @@ const Score = () => {
                       </p>
                     </div>
                   )}
-
-                  {/* {isResponse?.indexation_clause_analysis?.clause_text && (
-                    <div className="w-full bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                      <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                        Klauseltext:
-                      </h3>
-                      <p className="text-gray-600 whitespace-pre-line">
-                        {isResponse.indexation_clause_analysis.clause_text}
-                      </p>
-                    </div>
-                  )} */}
                 </div>
               </div>
 
@@ -784,11 +986,10 @@ const Score = () => {
                 </h1>
 
                 <div className="flex flex-wrap gap-4">
-
-                {isResponse?.vpi_validation?.llm_generated_summary && (
+                  {isResponse?.vpi_validation?.llm_generated_summary && (
                     <div className="w-full bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                       <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                      Ergebnis:
+                        Ergebnis:
                       </h3>
                       <p className="text-gray-600 whitespace-pre-line">
                         {isResponse.vpi_validation.llm_generated_summary}
@@ -902,11 +1103,10 @@ const Score = () => {
                 </h1>
 
                 <div className="flex flex-wrap gap-4">
-
-                {isResponse?.richtwert_validation?.llm_generated_summary && (
+                  {isResponse?.richtwert_validation?.llm_generated_summary && (
                     <div className="w-full bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                       <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                      Ergebnis:
+                        Ergebnis:
                       </h3>
                       <p className="text-gray-600 whitespace-pre-line">
                         {isResponse.richtwert_validation.llm_generated_summary}
@@ -1006,15 +1206,14 @@ const Score = () => {
 
               <div className="w-[100%] lg:w-[90%] mx-auto mt-12">
                 <h1 className="text-gray-800 text-xl sm:text-2xl lg:text-3xl my-10 font-bold">
-                Detailergebnis
+                  Detailergebnis
                 </h1>
 
                 <div className="flex flex-wrap gap-4">
-
-                {isResponse?.summary_comment && (
+                  {isResponse?.summary_comment && (
                     <div className="w-full bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                       <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                      Zusammenfassung:
+                        Zusammenfassung:
                       </h3>
                       <p className="text-gray-600 whitespace-pre-line">
                         {isResponse.summary_comment}
